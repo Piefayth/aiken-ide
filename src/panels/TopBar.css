@@ -1,0 +1,35 @@
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding-left: 15px;
+    border-bottom: solid 1px black;
+    font-size: 20px;
+}
+
+.editor-top-bar {
+    background-color: rgb(104, 17, 75);
+}
+
+.management-top-bar {
+    background-color: rgb(104, 17, 75);
+}
+
+.top-bar-item {
+    padding: 5px;
+    margin-top: none;
+    margin-right: 20px;
+}
+
+.editor-top-bar-item {
+    padding: 5px;
+    margin-top: none;
+    margin-right: 20px;
+    transition: background-color 0.25s linear;
+}
+
+.editor-top-bar-item:hover {
+    cursor: pointer;
+    background-color: rgb(160, 95, 126);
+    transition: background-color 0.25s linear;
+}
