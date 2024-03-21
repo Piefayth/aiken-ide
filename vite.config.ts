@@ -10,6 +10,7 @@ export default defineConfig({
     topLevelAwait(),
     react(),     
   ],
+  base: '/aiken-ide/',
   resolve: {
     preserveSymlinks: true,
   },
