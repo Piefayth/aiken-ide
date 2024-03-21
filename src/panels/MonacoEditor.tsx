@@ -1,6 +1,6 @@
 import Editor, { OnMount, useMonaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 
 type MonacoEditorProps = {

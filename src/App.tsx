@@ -6,6 +6,7 @@ import { EditorTopBar } from './panels/EditorTopBar';
 import { ManagementTopBar } from './panels/ManagementTopBar';
 import { ManagementPanel } from './panels/ManagementPanel';
 import { editor } from 'monaco-editor';
+import MonacoContext from './context/MonacoContext';
 
 function App() {
   const aiken = useAiken()
@@ -17,37 +18,26 @@ function App() {
 
   return (() => {
       return (
-        <>
+        <MonacoContext.Provider value={monaco}>
           <div className={`main-layout-container ${loadingVisibilityClass}`}>
-            !!!Loading...
+            !!!Loading... { /* TODO: make a loading component */}
           </div>
           <div className={`main-layout-container ${mainLayoutVisibilityClass}`}>
             <div className='editor-and-management-view-container'>
               <div className='editor-container'>
-                <EditorTopBar monaco={monaco} />
+                <EditorTopBar />
                 <MonacoEditor onLoad={(editor) => {
                   setMonaco(editor)
                   setIsMonacoStartingUp(false)
                 }}/>
               </div>
-
-              {
-                (() => {
-                  if (aiken.isLoading || isMonacoStartingUp) {
-                    return null
-                  } else {
-                    return (
-                      <div className='management-panel-container'>
-                        <ManagementTopBar />
-                        <ManagementPanel />
-                      </div>
-                    )
-                  }
-                })()
-              }
+              <div className='management-panel-container'>
+                <ManagementTopBar />
+                <ManagementPanel />
+              </div>
             </div>
           </div>
-        </>
+        </MonacoContext.Provider>
       )
   })()
 
