@@ -1,4 +1,4 @@
-import './TopBar.css';
+import '../TopBar.css';
 
 function ManagementTopBar() {
     return (

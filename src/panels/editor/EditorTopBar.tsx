@@ -1,8 +1,8 @@
-import './TopBar.css';
-import { BuildResult, FormatResult, useAiken } from '../hooks/useAiken';
+import '../TopBar.css';
+import { BuildResult, FormatResult, useAiken } from '../../hooks/useAiken';
 import { useDispatch } from 'react-redux';
-import { testProject } from '../features/aiken/projectSlice'
-import { useMonacoEditor } from '../context/MonacoContext';
+import { testProject } from '../../features/aiken/projectSlice'
+import { useMonacoEditor } from '../../context/MonacoContext';
 
 
 function EditorTopBar() {

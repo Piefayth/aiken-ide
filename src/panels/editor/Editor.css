@@ -1,0 +1,143 @@
+.editor-tab-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    max-width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    padding: 0px;
+    scrollbar-color: rgb(175, 13, 126, 0.3) rgb(55, 25, 45, 1);
+    scroll-padding: 0px;
+    scroll-margin: 0px;
+    height: 45px;
+    min-height: 45px;
+}
+
+.editor-tab {
+    background-color: #161616;
+    min-width: 200px;
+    max-width: 200px;
+    height: 100%;
+    border-right: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.highlight-open-focused-tab {
+    background-color: #1e1e1e;
+    border-bottom: 1px solid rgb(164, 28, 148);
+}
+
+.editor-tab:hover {
+    background-color: #e417c622;
+    cursor: pointer;
+}
+
+.editor-tab-label {
+    max-width: 100%;
+    overflow: hidden;
+    padding: 15px;
+    text-overflow: ellipsis;
+    display: flex;
+}
+
+.file-manager-container {
+    display: flex;
+    flex-direction: column;
+    width: 10vw;
+    min-width: 10vw;
+    background-color: #1e1e1e;
+}
+
+.file-manager-header {
+    background-color: #3e3e3e;
+    display: flex;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-right: 1px solid black;
+    justify-content: space-between;
+}
+
+.file-manager-file-list {
+    background-color: #1e1e1e;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.file-manager-file-entry {
+    width: 94%;
+    border: 1px solid transparent;
+    border-image: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(164, 28, 148, 1)) 1 stretch;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding-left: 10px;
+    
+}
+
+.file-manager-file-entry:hover {
+    background-color: #e417c622;
+    cursor: pointer;
+}
+
+.filename-start {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.filename-end {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.highlight-open-file {
+    font-style: italic
+}
+
+.highlight-open-focused-file {
+    border: 1px solid transparent;
+    border-image: linear-gradient(to left, rgba(1, 220, 45, 0.586), rgba(164, 28, 148, 1)) 1 stretch;
+}
+
+.add-file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-file-icon:hover {
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+}
+
+.add-file-icon-plus {
+    color: rgb(117, 221, 117);
+}
+
+.file-rename-entry {
+    border: solid 1px white;
+    background-color: rgb(73, 2, 52);
+}
+
+.file-rename-input {
+    border: none;
+    font-size: 16px;
+    background-color: #00000000;
+}
+
+.file-rename-input:hover {
+    border: none;
+}
+
+.file-rename-input:focus {
+    border: none;
+    outline: none;
+}

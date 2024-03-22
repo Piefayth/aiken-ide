@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import './App.css'
 import { useAiken } from './hooks/useAiken';
-import { MonacoEditor } from './panels/MonacoEditor';
-import { EditorTopBar } from './panels/EditorTopBar';
-import { ManagementTopBar } from './panels/ManagementTopBar';
-import { ManagementPanel } from './panels/ManagementPanel';
+import { MonacoEditor } from './panels/editor/MonacoEditor';
+import { EditorTopBar } from './panels/editor/EditorTopBar';
+import { ManagementTopBar } from './panels/management/ManagementTopBar';
+import { ManagementPanel } from './panels/management/ManagementPanel';
 import { editor } from 'monaco-editor';
 import MonacoContext from './context/MonacoContext';
+import { EditorTabs } from './panels/editor/EditorTabs';
+import { FileManager } from './panels/editor/FileManager';
+import Tooltip from './components/tooltip';
 
 function App() {
   const aiken = useAiken()
@@ -19,6 +22,7 @@ function App() {
   return (() => {
       return (
         <MonacoContext.Provider value={monaco}>
+          <Tooltip />
           <div className={`main-layout-container ${loadingVisibilityClass}`}>
             !!!Loading... { /* TODO: make a loading component */}
           </div>
@@ -26,10 +30,16 @@ function App() {
             <div className='editor-and-management-view-container'>
               <div className='editor-container'>
                 <EditorTopBar />
-                <MonacoEditor onLoad={(editor) => {
-                  setMonaco(editor)
-                  setIsMonacoStartingUp(false)
-                }}/>
+                <div className='editor-content-container'>
+                  <FileManager />
+                  <div className='editor-and-tabs-container'>
+                    <EditorTabs />
+                    <MonacoEditor onLoad={(editor) => {
+                      setMonaco(editor)
+                      setIsMonacoStartingUp(false)
+                    }}/>
+                  </div>
+                </div>
               </div>
               <div className='management-panel-container'>
                 <ManagementTopBar />

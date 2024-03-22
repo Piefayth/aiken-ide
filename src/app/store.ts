@@ -1,9 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import projectReducer from '../features/aiken/projectSlice'
+import fileReducer from '../features/files/filesSlice'
+import tooltipReducer from '../features/tooltip/tooltipSlice'
 
 export const store = configureStore({
   reducer: {
-    project: projectReducer
+    project: projectReducer,
+    files: fileReducer,
+    tooltip: tooltipReducer,
   },
 })
 

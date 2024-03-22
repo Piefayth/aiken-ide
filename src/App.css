@@ -3,10 +3,15 @@
   text-align: center;
 }
 
+body {
+  overflow-y: hidden;
+}
+
 .main-layout-container {
   display: flex;
   flex-direction: column; 
   border: solid 1px black;
+  overflow: hidden;
 }
 
 .editor-and-management-view-container {
@@ -14,24 +19,57 @@
   flex-direction: row;
   background-color: rgb(22, 22, 22);
   width: 100%;
+  max-width: 100%;
 }
 
 .editor-container {
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: 60vw;
   flex: 1;
+}
+
+.editor-content-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.editor-and-tabs-container {
+  max-width: 100%;
+  min-width: 50vw;
+  max-height: 94vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .management-panel-container {
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: 40vw;
   flex: 1;
   overflow: auto;
   word-wrap: break-word;
 }
 
+.tooltip {
+  background-color: rgba(38, 38, 38, 0.95);
+  border: solid 1px rgb(94, 94, 94);
+  color: #fff;
+  padding: 8px 10px;
+  z-index: 999;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  white-space: nowrap;
+  pointer-events: none; 
+}
+
 .hidden {
   display: none;
+}
+
+.unselectable {
+  user-select: none;
 }

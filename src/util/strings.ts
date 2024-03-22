@@ -13,4 +13,20 @@ function findLineNumberByCharIndex(text: string, charIndex: number): number | nu
     return null; // If the character index is out of range
 }
 
-export { findLineNumberByCharIndex }
+function splitFilename(filename: string) {
+    const dotIndex = filename.lastIndexOf('.');
+
+    if (dotIndex === -1) {
+        return {
+            name: filename,
+            extension: ''
+        };
+    }
+
+    return {
+        name: filename.substring(0, dotIndex),
+        extension: filename.substring(dotIndex)
+    };
+};
+
+export { findLineNumberByCharIndex, splitFilename }

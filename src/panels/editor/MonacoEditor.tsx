@@ -1,62 +1,49 @@
 import Editor, { OnMount, useMonaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/store';
 
 
 type MonacoEditorProps = {
     onLoad?: (editor: editor.IStandaloneCodeEditor) => void
 }
 
-const SOME_AIKEN_CODE = `use aiken/list
-use aiken/transaction.{
-  ScriptContext
-}
-
-type CoolTokenRedeemer {
-  guessed_word: ByteArray
-}
-
-type FancyType {
-  code_word: ByteArray
-}
-
-validator(fancy: FancyType) {
-  fn mint_my_cool_token(redeemer: CoolTokenRedeemer, _ctx: ScriptContext) -> Bool {
-      redeemer.guessed_word == fancy.code_word
-  }
-}
-
-fn quicksort(xs: List<Int>) -> List<Int> {
-  when xs is {
-    [] ->
-      []
-    [p, ..tail] -> {
-      let before = tail |> list.filter(fn(x) { x < p }) |> quicksort
-      let after = tail |> list.filter(fn(x) { x >= p }) |> quicksort
-      list.concat(before, [p, ..after])
-    }
-  }
-}
-
-test quicksort_0() {
-  quicksort([]) == []
-}
-
-test quicksort_1() {
-  quicksort([3, 2, 1, 4]) == [1, 2, 3, 4]
-}
-
-test quicksort_2() {
-  quicksort([1, 2, 3, 4]) == [1, 2, 3, 4]
-}
-`
-
 function MonacoEditor({ onLoad }: MonacoEditorProps) {
     const monaco = useMonaco()
+    const files = useSelector((state: RootState) => state.files)
+    const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    
+    // this block adjusts the current visible file in the editor
+    if (editorRef.current && monaco) {
+        const selectedFile = files.files[files.currentFileFocusedInEditorIndex];
+        
+        if (selectedFile) {
+            const models = monaco.editor.getModels();
+    
+            let model = models.find(m => m.uri.path.endsWith(selectedFile.name));
+        
+            if (!model) {
+                model = monaco.editor.createModel(
+                    selectedFile.content,
+                    'aiken',    // TODO: figure out file type from extension
+                    monaco.Uri.parse(selectedFile.name)
+                );
+            }
+            
+            editorRef.current.setModel(model);
+        } else {
+            // no open files
+            // or there is a bug where the currentFileFocusedInEditorIndex is not a valid index into the files array
+            editorRef.current.setModel(null);
+        }
+
+    }
 
     const handleEditorDidMount: OnMount = (editor) => {
+        editorRef.current = editor;
         if (onLoad) {
-            onLoad(editor)
+            onLoad(editor);
         }
     };
 
@@ -119,11 +106,11 @@ function MonacoEditor({ onLoad }: MonacoEditorProps) {
 
     if (monaco) {
         return <Editor 
-            height="90vh" 
-            width="60vw" 
+            height="90vh"
+            width="100%" 
             theme="aiken-theme" 
             defaultLanguage="aiken" 
-            defaultValue={SOME_AIKEN_CODE} 
+            defaultValue={files.files[0].content} 
             options={{ minimap: { enabled: false } }}
             onMount={handleEditorDidMount}
         />
