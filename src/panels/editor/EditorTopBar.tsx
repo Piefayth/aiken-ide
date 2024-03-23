@@ -1,33 +1,49 @@
 import '../TopBar.css';
-import { BuildResult, FormatResult, useAiken } from '../../hooks/useAiken';
-import { useDispatch } from 'react-redux';
+import { FormatResult, useAiken } from '../../hooks/useAiken';
+import { useDispatch, useSelector } from 'react-redux';
 import { testProject } from '../../features/aiken/projectSlice'
 import { useMonacoEditor } from '../../context/MonacoContext';
-
+import { RootState } from '../../app/store';
+import { getFileLanguage } from '../../constants';
 
 function EditorTopBar() {
     const aiken = useAiken()
     const monacoEditor = useMonacoEditor()
+    const files = useSelector((state: RootState) => state.files)
     const dispatch = useDispatch()
 
+    let maybeDisabledClass = ''
+    
     return (
         <div className='top-bar editor-top-bar'>
             <div 
-                className='top-bar-item editor-top-bar-item'
+                className={`top-bar-item editor-top-bar-item ${maybeDisabledClass}`}
                 onClick={() => {
-                    const code = monacoEditor?.getValue() || ''
-                    const buildResult: BuildResult = aiken.project.build(code, true)
-                    dispatch(testProject({ buildResult, code }))
+                    let compiledFiles = []
+                    let buildResults = []
+                    for (let file of files.files) {
+                        if (getFileLanguage(file.name) === 'aiken') {
+                            compiledFiles.push(file)
+                            buildResults.push(aiken.project.build(file.content, true))
+                        }
+                    }
+                    dispatch(testProject({ buildResults, compiledFiles }))
                 }}
             >
             ▶ Test  
             </div>
             <div 
-                className='top-bar-item editor-top-bar-item'
+                className={`top-bar-item editor-top-bar-item ${maybeDisabledClass}`}
                 onClick={() => {
-                    const code = monacoEditor?.getValue() || ''
-                    const buildResult: BuildResult = aiken.project.build(code, false)
-                    dispatch(testProject({ buildResult, code }))
+                    let compiledFiles = []
+                    let buildResults = []
+                    for (let file of files.files) {
+                        if (getFileLanguage(file.name) === 'aiken') {
+                            compiledFiles.push(file)
+                            buildResults.push(aiken.project.build(file.content, false))
+                        }
+                    }
+                    dispatch(testProject({ buildResults, compiledFiles }))
                 }}
             >
             🛠 Build 

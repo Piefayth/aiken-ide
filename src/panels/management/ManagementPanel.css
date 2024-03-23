@@ -2,14 +2,20 @@
     display: flex;
     flex-direction: column;
     align-items: start;
-    padding: 5px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: calc(94vh - 45px); /* 45px is the height of the tabs */
 }
 
 .management-heading {
     font-size: 30px;
+    padding: 10px;
+    margin-left: 10px;
 }
 
 .summary {
+    display: flex;
+    flex-direction: row;
     padding: 0px;
     margin: 0px;
 }
@@ -74,4 +80,58 @@
 .error-item {
     padding: 5px;
     padding-left: 15px;
+}
+
+.build-result-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width: 100%;
+}
+
+.build-result-filename {
+    padding: 5px;
+    font-size: 20px;
+    background-color: rgb(47, 41, 43);
+    width: 100%;
+    display: flex;
+    box-sizing: border-box;
+}
+
+.management-tab-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    max-width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    padding: 0px;
+    scrollbar-color: rgba(18, 92, 195, 0.3) rgb(11, 36, 68);
+    scroll-padding: 0px;
+    scroll-margin: 0px;
+    height: 45px;
+    min-height: 45px;
+}
+
+.management-tab {
+    background-color: #161616;
+    min-width: 100px;
+    max-width: 150px;
+    height: 100%;
+    border-right: 1px solid rgb(18, 92, 195, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.management-tab:hover {
+    background-color: #4317e422;
+    cursor: pointer;
+}
+
+.highlight-focused-management-tab {
+    background-color: #1e1e1e;
+    border-bottom: 1px solid rgb(64, 140, 216);
 }

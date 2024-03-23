@@ -10,11 +10,16 @@ const FILE_EXTENSION_TO_MONACO_LANGUAGE: Record<string, string> = {
     ".txt": "plaintext"
 }
 
+const getFileLanguage = (filename: string) => {
+    const fileExtension = filename.slice(filename.lastIndexOf('.'))
+    return FILE_EXTENSION_TO_MONACO_LANGUAGE[fileExtension] || 'plaintext'
+}
 const ALLOWED_FILE_EXTENSIONS = Object.keys(FILE_EXTENSION_TO_MONACO_LANGUAGE)
 
 export {
     TOOLTIP_EXPIRE_TIME_MS,
     CURSED_ZERO_WIDTH_SPACE,
     ALLOWED_FILE_EXTENSIONS,
-    FILE_EXTENSION_TO_MONACO_LANGUAGE
+    FILE_EXTENSION_TO_MONACO_LANGUAGE,
+    getFileLanguage // TODO: This goes somewhere else?
 }

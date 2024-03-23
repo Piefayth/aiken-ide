@@ -56,6 +56,8 @@ export interface File {
   currentFileFocusedInEditorIndex: The index in the files array containing the currently loaded model.
   openFileIndices: The currently open files, indexed in tab order.
   pendingCloseFileIndex: The index of a tab that has experienced a mouseDown interaction with intent to close but not yet a mouseUp
+  beingRenamedFileIndex:
+  renameFileError: Set this to trigger error tooltip at the rename box's location
 */
 export interface FileState {
   files: File[],
@@ -70,14 +72,6 @@ const initialState: FileState = {
   files: [{
     name: 'example.ak',
     content: SOME_AIKEN_CODE,   // when do we update content??
-    type: 'aiken'
-  }, {
-    name: 'example2.ak',
-    content: SOME_AIKEN_CODE,
-    type: 'aiken'
-  }, {
-    name: 'example3.ak',
-    content: SOME_AIKEN_CODE,
     type: 'aiken'
   }],
   currentFileFocusedInEditorIndex: 0,
@@ -96,6 +90,9 @@ export const filesSlice = createSlice({
       if (!state.openFileIndices.includes(action.payload)) {
         state.openFileIndices.push(action.payload)
       }
+    },
+    writeFileContents(state, action: PayloadAction<{index: number, content: string}>) {
+      state.files[action.payload.index].content = action.payload.content
     },
     closeFile(state, action: PayloadAction<number>) {
       const closedFileIndex = action.payload
@@ -221,5 +218,5 @@ export const filesSlice = createSlice({
   }
 })
 
-export const { selectFile, closeFile, pendingCloseFile, addFile, confirmRenameFile, cancelRenameFile, removeFile, renameFile } = filesSlice.actions
+export const { selectFile, writeFileContents, closeFile, pendingCloseFile, addFile, confirmRenameFile, cancelRenameFile, removeFile, renameFile } = filesSlice.actions
 export default filesSlice.reducer

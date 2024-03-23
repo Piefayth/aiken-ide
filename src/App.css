@@ -49,8 +49,8 @@ body {
   width: 100%;
   max-width: 40vw;
   flex: 1;
-  overflow: auto;
   word-wrap: break-word;
+  border-left: 1px solid black;
 }
 
 .tooltip {
@@ -98,4 +98,14 @@ body {
 
 .unselectable {
   user-select: none;
+}
+
+.disabled {
+  opacity: 0.5;
+  
+}
+
+.disabled:hover {
+  background-color: #00000000;
+  cursor: default;
 }

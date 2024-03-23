@@ -70,7 +70,6 @@ function FileManager() {
             <div 
                 className='file-manager-file-list '
                 onContextMenu={(e: React.MouseEvent) => {
-                    console.log("right clicked a file manager")
                     e.preventDefault()
                     dispatch(showContextMenu({
                         options: [{ name: 'New File' }],

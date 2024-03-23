@@ -11,6 +11,7 @@ import { EditorTabs } from './panels/editor/EditorTabs';
 import { FileManager } from './panels/editor/FileManager';
 import Tooltip from './components/tooltip';
 import { ContextMenu } from './components/contextMenu';
+import { ManagementTabs } from './panels/management/ManagementTabs';
 
 function App() {
   const aiken = useAiken()
@@ -36,15 +37,18 @@ function App() {
                   <FileManager />
                   <div className='editor-and-tabs-container'>
                     <EditorTabs />
-                    <MonacoEditor onLoad={(editor) => {
-                      setMonaco(editor)
-                      setIsMonacoStartingUp(false)
-                    }}/>
+                    <MonacoEditor 
+                      onLoad={(editor) => {
+                        setMonaco(editor)
+                        setIsMonacoStartingUp(false)
+                      }}
+                    />
                   </div>
                 </div>
               </div>
               <div className='management-panel-container'>
                 <ManagementTopBar />
+                <ManagementTabs />
                 <ManagementPanel />
               </div>
             </div>

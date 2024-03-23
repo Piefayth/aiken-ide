@@ -1,40 +1,45 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { BuildResult } from '../../hooks/useAiken'
 import { findLineNumberByCharIndex } from '../../util/strings'
+import { File } from '../files/filesSlice'
 
 export interface ProjectState {
-    buildResult: BuildResult | null
-    builtCode: string 
+    buildResults: BuildResult[] | null
+    builtFiles: File[]
 }
 
 const initialState: ProjectState = {
-    buildResult: null,
-    builtCode: ""
+    buildResults: [],
+    builtFiles: []
 }
 
 export const projectSlice = createSlice({
     name: 'aiken',
     initialState,
     reducers: {
-        testProject: (state, action: PayloadAction<{code: string, buildResult: BuildResult}>) => {
-            state.buildResult = action.payload.buildResult
-            state.builtCode = action.payload.code
+        testProject: (state, action: PayloadAction<{compiledFiles: File[], buildResults: BuildResult[]}>) => {
+            state.buildResults = action.payload.buildResults
+            state.builtFiles = action.payload.compiledFiles
 
-            state.buildResult.errors = state.buildResult.errors.map((err) => {
-                const line = findLineNumberByCharIndex(state.builtCode, err.line) || -1
-                return {
-                    ...err,
-                    line
-                }
-            })
+            for (let i = 0; i < state.buildResults.length; i++) {
+                state.buildResults[i].errors = state.buildResults[i].errors.map((err) => {
+                    const line = findLineNumberByCharIndex(state.builtFiles[i].content, err.line) || -1
+                    return {
+                        ...err,
+                        line
+                    }
+                })
+    
+                state.buildResults[i].warnings = state.buildResults[i].warnings.map((err) => {
+                    const line = findLineNumberByCharIndex(state.builtFiles[i].content, err.line) || -1
+                    return {
+                        ...err,
+                        line
+                    }
+                })
+            }
 
-            state.buildResult.warnings = state.buildResult.warnings.map((err) => {
-                const line = findLineNumberByCharIndex(state.builtCode, err.line) || -1
-                return {
-                    ...err,
-                    line
-                }
-            })
+
         },
     }
 })

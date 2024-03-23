@@ -1,9 +1,10 @@
 import Editor, { OnMount, useMonaco } from '@monaco-editor/react'
 import { editor } from 'monaco-editor'
 import { useEffect, useRef } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../app/store'
 import { FILE_EXTENSION_TO_MONACO_LANGUAGE } from '../../constants'
+import { writeFileContents } from '../../features/files/filesSlice'
 
 
 type MonacoEditorProps = {
@@ -13,18 +14,20 @@ type MonacoEditorProps = {
 function MonacoEditor({ onLoad }: MonacoEditorProps) {
     const monaco = useMonaco()
     const files = useSelector((state: RootState) => state.files)
+    const dispatch = useDispatch()
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
     
     if (editorRef.current && monaco) {
         const selectedFile = files.files[files.currentFileFocusedInEditorIndex]
         
+        const models = monaco.editor.getModels()
+
         if (selectedFile) {
             const fileExtension = selectedFile.name.slice(selectedFile.name.lastIndexOf('.'))
 
             const fileLanguage = FILE_EXTENSION_TO_MONACO_LANGUAGE[fileExtension] || 'plaintext'
-            const models = monaco.editor.getModels()
-    
-            let model = models.find(m => m.uri.path.endsWith(selectedFile.name))
+
+            let model = models.find(m => m.uri.path.includes(selectedFile.name))
         
             if (!model || fileLanguage != model.getLanguageId()) {
                 model = monaco.editor.createModel(
@@ -40,6 +43,14 @@ function MonacoEditor({ onLoad }: MonacoEditorProps) {
             // or there is a bug where the currentFileFocusedInEditorIndex is not a valid index into the files array
             editorRef.current.setModel(null)
         }
+
+        // delete models for files that don't exist
+        models.forEach(model => {
+            const fileForModel = files.files.find(file => model.uri.path.includes(file.name))
+            if (!fileForModel) {
+                model.dispose()
+            }
+        })
 
     }
 
@@ -108,8 +119,34 @@ function MonacoEditor({ onLoad }: MonacoEditorProps) {
     }, [monaco])
 
     if (monaco) {
-        return <Editor 
-            height="90vh"
+        return(
+        <div 
+            style={{width:"100%", height: "90vh"}} 
+            onBlur={() => { // write the file contents when the editor is defocused
+                if (!monaco) {
+                    return
+                }
+
+                const selectedFile = files.files[files.currentFileFocusedInEditorIndex]
+                const models = monaco.editor.getModels()
+                let model = models.find(m => m.uri.path.includes(selectedFile.name))
+
+                if (!model) {
+                    console.error("If this happened, there is a bug. :)")
+                    return
+                }
+
+                dispatch(
+                    writeFileContents({
+                        index: files.currentFileFocusedInEditorIndex,
+                        content: model!!.getValue()
+                    })
+                )
+            }
+        }
+        >
+         <Editor 
+            height="calc(94vh - 45px)"  // 45px is the fixed height of tabs
             width="100%" 
             theme="aiken-theme" 
             defaultLanguage="aiken" 
@@ -117,6 +154,7 @@ function MonacoEditor({ onLoad }: MonacoEditorProps) {
             options={{ minimap: { enabled: false } }}
             onMount={handleEditorDidMount}
         />
+        </div>)
     } else {
         return null
     }

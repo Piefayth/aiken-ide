@@ -14,7 +14,7 @@
 }
 
 .management-top-bar {
-    background-color: rgb(104, 17, 75);
+    background-color: rgb(18, 92, 195, 0.3);
 }
 
 .top-bar-item {
@@ -34,4 +34,8 @@
     cursor: pointer;
     background-color: rgb(160, 95, 126);
     transition: background-color 0.25s linear;
+}
+
+.no-last-build-notice {
+    margin-left: 10px;
 }
