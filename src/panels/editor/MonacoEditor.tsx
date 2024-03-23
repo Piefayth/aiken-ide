@@ -1,8 +1,9 @@
-import Editor, { OnMount, useMonaco } from '@monaco-editor/react';
-import { editor } from 'monaco-editor';
-import { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
+import Editor, { OnMount, useMonaco } from '@monaco-editor/react'
+import { editor } from 'monaco-editor'
+import { useEffect, useRef } from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../app/store'
+import { FILE_EXTENSION_TO_MONACO_LANGUAGE } from '../../constants'
 
 
 type MonacoEditorProps = {
@@ -12,40 +13,42 @@ type MonacoEditorProps = {
 function MonacoEditor({ onLoad }: MonacoEditorProps) {
     const monaco = useMonaco()
     const files = useSelector((state: RootState) => state.files)
-    const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
     
-    // this block adjusts the current visible file in the editor
     if (editorRef.current && monaco) {
-        const selectedFile = files.files[files.currentFileFocusedInEditorIndex];
+        const selectedFile = files.files[files.currentFileFocusedInEditorIndex]
         
         if (selectedFile) {
-            const models = monaco.editor.getModels();
+            const fileExtension = selectedFile.name.slice(selectedFile.name.lastIndexOf('.'))
+
+            const fileLanguage = FILE_EXTENSION_TO_MONACO_LANGUAGE[fileExtension] || 'plaintext'
+            const models = monaco.editor.getModels()
     
-            let model = models.find(m => m.uri.path.endsWith(selectedFile.name));
+            let model = models.find(m => m.uri.path.endsWith(selectedFile.name))
         
-            if (!model) {
+            if (!model || fileLanguage != model.getLanguageId()) {
                 model = monaco.editor.createModel(
                     selectedFile.content,
-                    'aiken',    // TODO: figure out file type from extension
+                    fileLanguage,
                     monaco.Uri.parse(selectedFile.name)
-                );
+                )
             }
             
-            editorRef.current.setModel(model);
+            editorRef.current.setModel(model)
         } else {
             // no open files
             // or there is a bug where the currentFileFocusedInEditorIndex is not a valid index into the files array
-            editorRef.current.setModel(null);
+            editorRef.current.setModel(null)
         }
 
     }
 
     const handleEditorDidMount: OnMount = (editor) => {
-        editorRef.current = editor;
+        editorRef.current = editor
         if (onLoad) {
-            onLoad(editor);
+            onLoad(editor)
         }
-    };
+    }
 
     useEffect(() => {
         if (monaco) {

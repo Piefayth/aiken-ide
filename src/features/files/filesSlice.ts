@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
-import { CURSED_ZERO_WIDTH_SPACE } from '../../constants'
+import { ALLOWED_FILE_EXTENSIONS, CURSED_ZERO_WIDTH_SPACE } from '../../constants'
 
 const SOME_AIKEN_CODE = `use aiken/list
 use aiken/transaction.{
@@ -133,7 +133,7 @@ export const filesSlice = createSlice({
       let uniqueFilename = 'newfile'
 
       for (let i = 1; i < Infinity; i++) {
-        const potentialUniqueFilename = `${uniqueFilename}${i === 1 ? '' : i - 1}.ext`
+        const potentialUniqueFilename = `${uniqueFilename}${i === 1 ? '' : i - 1}.ak`
         if (!state.files.find(file => file.name === potentialUniqueFilename)) {
           uniqueFilename = potentialUniqueFilename
           break
@@ -159,14 +159,14 @@ export const filesSlice = createSlice({
     confirmRenameFile(state, action: PayloadAction<string>) {
       const newFilename = action.payload
       const isFilenameUnique = !state.files.find((file, index) => file.name === newFilename && index != state.beingRenamedFileIndex)
-      const isFileExtensionValid = true
+      const isFileExtensionValid = !!ALLOWED_FILE_EXTENSIONS.find(extension => newFilename.endsWith(extension))
 
       let errorText = ""
 
       if (!isFilenameUnique) {
         errorText = "Filenames must be unique."
       } else if (!isFileExtensionValid) {
-        errorText = "Allowed extensions: .ak .json .js .ts .txt."
+        errorText = `Allowed extensions: ${ALLOWED_FILE_EXTENSIONS.join(" ")}`
       } else {
         state.files[state.beingRenamedFileIndex].name = newFilename
         state.beingRenamedFileIndex = -1
