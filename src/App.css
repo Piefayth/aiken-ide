@@ -66,6 +66,32 @@ body {
   pointer-events: none; 
 }
 
+.context-menu {
+  min-width: 200px;
+  background-color: rgba(38, 38, 38, 0.95);
+  border: solid 1px rgb(94, 94, 94);
+  color: #fff;
+  z-index: 999;
+  border-radius: 3px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+}
+
+.context-menu-item {
+  display:flex;
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+}
+.context-menu-item:hover {
+  background-color: rgb(70, 70, 70);
+}
+
 .hidden {
   display: none;
 }

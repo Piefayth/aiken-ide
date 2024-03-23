@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css'
 import { useAiken } from './hooks/useAiken';
 import { MonacoEditor } from './panels/editor/MonacoEditor';
@@ -10,6 +10,7 @@ import MonacoContext from './context/MonacoContext';
 import { EditorTabs } from './panels/editor/EditorTabs';
 import { FileManager } from './panels/editor/FileManager';
 import Tooltip from './components/tooltip';
+import { ContextMenu } from './components/contextMenu';
 
 function App() {
   const aiken = useAiken()
@@ -23,6 +24,7 @@ function App() {
       return (
         <MonacoContext.Provider value={monaco}>
           <Tooltip />
+          <ContextMenu />
           <div className={`main-layout-container ${loadingVisibilityClass}`}>
             !!!Loading... { /* TODO: make a loading component */}
           </div>
