@@ -109,3 +109,7 @@ body {
   background-color: #00000000;
   cursor: default;
 }
+
+.copy-widget {
+  margin-left: 10px;
+}

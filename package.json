@@ -13,6 +13,7 @@
     "@monaco-editor/react": "^4.6.0",
     "@reduxjs/toolkit": "^2.2.2",
     "aiken-js-bindings": "^0.1.2",
+    "lucid-cardano": "^0.10.7",
     "monaco-editor": "^0.47.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

@@ -13,8 +13,14 @@ export default defineConfig({
   base: '/aiken-ide/',
   resolve: {
     preserveSymlinks: true,
+    alias: {
+      'lucid-cardano': './node_modules/lucid-cardano/web/mod.js'
+    }
   },
   optimizeDeps: {
-    exclude: ["aiken-js-bindings"]
-  }
+    exclude: [
+      'aiken-js-bindings',
+      'lucid-cardano'
+    ]
+  },
 })

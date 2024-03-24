@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
-import { ALLOWED_FILE_EXTENSIONS, CURSED_ZERO_WIDTH_SPACE } from '../../constants'
+import { ALLOWED_FILE_EXTENSIONS, CURSED_ZERO_WIDTH_SPACE, FILE_EXTENSION_TO_MONACO_LANGUAGE } from '../../constants'
 
 const SOME_AIKEN_CODE = `use aiken/list
 use aiken/transaction.{
@@ -140,7 +140,7 @@ export const filesSlice = createSlice({
       state.files.push({
         name: uniqueFilename,
         content: '',
-        type: 'text'
+        type: 'aiken'
       })
 
       const newFileIndex = state.files.length - 1
@@ -156,16 +156,17 @@ export const filesSlice = createSlice({
     confirmRenameFile(state, action: PayloadAction<string>) {
       const newFilename = action.payload
       const isFilenameUnique = !state.files.find((file, index) => file.name === newFilename && index != state.beingRenamedFileIndex)
-      const isFileExtensionValid = !!ALLOWED_FILE_EXTENSIONS.find(extension => newFilename.endsWith(extension))
+      const fileExtension = ALLOWED_FILE_EXTENSIONS.find(extension => newFilename.endsWith(extension))
 
       let errorText = ""
 
       if (!isFilenameUnique) {
         errorText = "Filenames must be unique."
-      } else if (!isFileExtensionValid) {
+      } else if (!fileExtension) {
         errorText = `Allowed extensions: ${ALLOWED_FILE_EXTENSIONS.join(" ")}`
       } else {
         state.files[state.beingRenamedFileIndex].name = newFilename
+        state.files[state.beingRenamedFileIndex].type = FILE_EXTENSION_TO_MONACO_LANGUAGE[fileExtension] as 'aiken' | 'json' | 'text'
         state.beingRenamedFileIndex = -1
         state.renameFileError = null
       }

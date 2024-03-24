@@ -1,4 +1,4 @@
-.management-content {
+.build-results-content {
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -7,7 +7,7 @@
     height: calc(94vh - 45px); /* 45px is the height of the tabs */
 }
 
-.management-heading {
+.build-results-heading {
     font-size: 30px;
     padding: 10px;
     margin-left: 10px;
@@ -108,7 +108,7 @@
     overflow-y: hidden;
     scrollbar-width: thin;
     padding: 0px;
-    scrollbar-color: rgba(18, 92, 195, 0.3) rgb(11, 36, 68);
+    scrollbar-color: rgba(18, 92, 195, 0.3) rgb(11, 36, 68, 0.7);
     scroll-padding: 0px;
     scroll-margin: 0px;
     height: 45px;
@@ -134,4 +134,78 @@
 .highlight-focused-management-tab {
     background-color: #1e1e1e;
     border-bottom: 1px solid rgb(64, 140, 216);
+}
+
+.contracts-content {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: calc(94vh - 45px); /* 45px is the height of the tabs */
+}
+
+.transact-content {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: calc(94vh - 45px); /* 45px is the height of the tabs */
+}
+
+.wallets-content {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: calc(94vh - 45px); /* 45px is the height of the tabs */
+}
+
+.wallet-utxos-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width:100%;
+}
+
+.wallet-utxos-address {
+    padding: 5px;
+    padding-left: 15px;
+    background-color: rgb(45, 40, 40);
+    width:100%;
+    display: flex;
+    font-size: 18px;
+}
+
+.utxo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin-left: 30px;
+    width: 100%;
+    padding: 5px;
+}
+
+.wallet-utxos > div:nth-child(odd) {
+    background-color: #5b5b5b;
+}
+
+.wallet-utxos > div:nth-child(even) {
+    background-color: #4a4a4a;
+}
+
+.wallet-utxos {
+    width: 100%;
+}
+
+.asset-container {
+    display: flex;
+    flex-direction: row;
+    margin-left: 15px
+}
+
+.asset-label {
+    margin-right: 5px;
 }

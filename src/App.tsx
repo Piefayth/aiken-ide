@@ -1,17 +1,21 @@
-import { useState } from 'react';
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString()
+}
+
+import { useState } from 'react'
 import './App.css'
-import { useAiken } from './hooks/useAiken';
-import { MonacoEditor } from './panels/editor/MonacoEditor';
-import { EditorTopBar } from './panels/editor/EditorTopBar';
-import { ManagementTopBar } from './panels/management/ManagementTopBar';
-import { ManagementPanel } from './panels/management/ManagementPanel';
-import { editor } from 'monaco-editor';
-import MonacoContext from './context/MonacoContext';
-import { EditorTabs } from './panels/editor/EditorTabs';
-import { FileManager } from './panels/editor/FileManager';
-import Tooltip from './components/tooltip';
-import { ContextMenu } from './components/contextMenu';
-import { ManagementTabs } from './panels/management/ManagementTabs';
+import { useAiken } from './hooks/useAiken'
+import { MonacoEditor } from './panels/editor/MonacoEditor'
+import { EditorTopBar } from './panels/editor/EditorTopBar'
+import { ManagementTopBar } from './panels/management/ManagementTopBar'
+import { ManagementPanel } from './panels/management/ManagementPanel'
+import { editor } from 'monaco-editor'
+import MonacoContext from './context/MonacoContext'
+import { EditorTabs } from './panels/editor/EditorTabs'
+import { FileManager } from './panels/editor/FileManager'
+import Tooltip from './components/tooltip'
+import { ContextMenu } from './components/contextMenu'
+import { ManagementTabs } from './panels/management/ManagementTabs'
 
 function App() {
   const aiken = useAiken()

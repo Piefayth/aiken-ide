@@ -16,7 +16,7 @@ function ManagementTabs() {
                     return (
                         <div
                             key={index}
-                            className={`management-tab ${focusedTabClass}`}
+                            className={`management-tab ${focusedTabClass} unselectable`}
                             onClick={() => {
                                 dispatch(selectTab(index))
                             }}
