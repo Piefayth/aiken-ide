@@ -84,6 +84,22 @@ const initialState: FileState = {
         ]
     }], null, 2),
     type: 'json'
+  }, {
+    name: 'nativeScript.json',
+    content: JSON.stringify({
+      "type": "all",
+      "scripts": [
+        {
+          "type": "before",
+          "slot": 1
+        },
+        {
+          "type": "sig",
+          "keyHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        }
+      ]
+    }, null, 2),
+    type: 'json'
   }],
   currentFileFocusedInEditorIndex: 0,
   openFileIndices: [0],

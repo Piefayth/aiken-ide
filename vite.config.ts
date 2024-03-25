@@ -13,9 +13,11 @@ export default defineConfig({
   base: '/aiken-ide/',
   resolve: {
     preserveSymlinks: true,
-    alias: {
-      'lucid-cardano': './node_modules/lucid-cardano/web/mod.js'
-    }
+    alias: process.env.NODE_ENV === 'production'
+      ? {
+          'lucid-cardano': './node_modules/lucid-cardano/web/mod.js',
+        }
+      : {}
   },
   optimizeDeps: {
     exclude: [

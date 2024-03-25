@@ -9,7 +9,13 @@ export interface Wallet {
 
 export interface ContractInput {
     script: Script,
+    name: string,
+    paramsFileName: string,
+}
+
+export interface DeleteContractInput {
     name: string
+    version: number
 }
 
 type Contract = {
@@ -60,10 +66,14 @@ const managementSlice = createSlice({
                     version = contract.version + 1
                 }
             }
-            state.contracts.push({
+            state.contracts.unshift({
                 ...action.payload,
                 version
             })
+        },
+        removeContract(state, action: PayloadAction<DeleteContractInput>) {
+            const { name, version } = action.payload
+            state.contracts = state.contracts.filter(contract => !(contract.name === name && contract.version === version))
         },
         clearAddContractError(state) {
             state.addContractError = undefined
@@ -76,6 +86,7 @@ export const {
     setNetwork,
     addWallet,
     addContract,
+    removeContract,
     clearAddContractError
 } = managementSlice.actions
 export default managementSlice.reducer

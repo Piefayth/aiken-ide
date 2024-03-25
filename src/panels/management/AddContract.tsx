@@ -39,12 +39,12 @@ function AddContract() {
     const jsonFiles = files.filter(file => file.type === 'json')
     const jsonChoices = jsonFiles.map(file => file.name).concat(['None'])
 
-    if (paramsFilename === undefined && jsonChoices.length > 0) {
-        setParamsFilename(jsonChoices[0])
-    }
-
     if (scriptName === undefined && validatorChoices.length > 0) {
         setScriptName(validatorChoices[0])
+    }
+
+    if (paramsFilename === undefined && jsonChoices.length > 0) {
+        setParamsFilename(jsonChoices[0])
     }
 
     const isCreateDisabledClass = scriptName === undefined ? 'disabled' : ''
@@ -92,13 +92,20 @@ function AddContract() {
                                         setScriptName(e.target.value)
                                     }}
                                 >
-                                    {jsonChoices?.map(fileName =>
-                                        <option
-                                            value={fileName}
-                                            key={fileName}
-                                        >{fileName}
-                                        </option>
-                                    )}
+                                    {jsonChoices?.map(fileName => {
+                                        if (fileName === 'None') {
+                                            return null
+                                        }
+                                        
+                                        return (
+                                            <option
+                                                value={fileName}
+                                                key={fileName}
+                                            >
+                                                {fileName}
+                                            </option>
+                                        )
+                                    })}
                                 </select>
                             )
                     }
@@ -111,9 +118,6 @@ function AddContract() {
                             <select 
                                 className='add-contract-select'
                                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                                    if (e.target.value === 'None') {
-                                        return setParamsFilename(undefined)
-                                    }
                                     setParamsFilename(e.target.value)
                                 }}
                             >
@@ -135,7 +139,8 @@ function AddContract() {
                         className={`add-contract-button ${isCreateDisabledClass}`}
                         onClick={() => {
                             if (scriptType === 'aiken') {
-                                const paramsJson = jsonFiles.find(jsonFile => jsonFile.name === paramsFilename)?.content
+                                const paramsJsonFile = jsonFiles.find(jsonFile => jsonFile.name === paramsFilename)
+                                const paramsJson = paramsJsonFile?.content
                                 const validator = validators?.find(v => v.name === scriptName) || validators?.[0]
                                 if (!validator) {
                                     console.error(`No known validator ${scriptName}`)
@@ -148,7 +153,7 @@ function AddContract() {
                                     const jsonParams = JSON.parse(paramsJson)
                                     params = constructObject(jsonParams)
                                 }
-
+                                
                                 const parameterizedValidator = {
                                     type: 'PlutusV2',
                                     script: applyDoubleCborEncoding(
@@ -161,15 +166,18 @@ function AddContract() {
                                 dispatch(addContract({
                                     script: parameterizedValidator,
                                     name: validator.name,
+                                    paramsFileName: paramsJsonFile?.name || 'None'
                                 }))
                             } else if (scriptType === 'native') {
-                                const nativeScriptJson = jsonFiles.find(jsonFile => jsonFile.name === scriptName)?.content
+                                const nativeScriptJsonFile = jsonFiles.find(jsonFile => jsonFile.name === scriptName)
+                                const nativeScriptJson = nativeScriptJsonFile?.content
                                 if (nativeScriptJson) {
                                     const parsedNativeScriptJson = JSON.parse(nativeScriptJson)
                                     const parameterizedValidator = lucid.utils.nativeScriptFromJson(parsedNativeScriptJson)
                                     dispatch(addContract({
                                         script: parameterizedValidator,
-                                        name: scriptName!!
+                                        name: scriptName!!,
+                                        paramsFileName: nativeScriptJsonFile?.name
                                     }))
                                 }
                             }
