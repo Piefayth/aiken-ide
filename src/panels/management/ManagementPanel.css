@@ -373,6 +373,7 @@
 
 .contract-params {
     margin-left: 10px;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     align-items:start;
