@@ -3,7 +3,7 @@ import { RootState } from "../../app/store"
 import { useLucid } from "../../hooks/useLucid"
 import React, { useRef, useState } from "react"
 import { Constr, Data, Script, applyDoubleCborEncoding, applyParamsToScript } from "lucid-cardano"
-import { addContract, clearAddContractError } from "../../features/management/managementSlice"
+import { addContract, clearAddContractError, setAddContractError } from "../../features/management/managementSlice"
 import { useTooltip } from "../../hooks/useTooltip"
 
 type ScriptKind = 'aiken' | 'native'
@@ -39,8 +39,12 @@ function AddContract() {
     const jsonFiles = files.filter(file => file.type === 'json')
     const jsonChoices = jsonFiles.map(file => file.name).concat(['None'])
 
-    if (scriptName === undefined && validatorChoices.length > 0) {
+    if (scriptName === undefined && scriptType === 'aiken' && validatorChoices.length > 0) {
         setScriptName(validatorChoices[0])
+    }
+
+    if (scriptName === undefined && scriptType === 'native' && jsonChoices.length > 0) {
+        setScriptName(jsonChoices[0])
     }
 
     if (paramsFilename === undefined && jsonChoices.length > 0) {
@@ -96,7 +100,7 @@ function AddContract() {
                                         if (fileName === 'None') {
                                             return null
                                         }
-                                        
+
                                         return (
                                             <option
                                                 value={fileName}
@@ -142,16 +146,25 @@ function AddContract() {
                                 const paramsJsonFile = jsonFiles.find(jsonFile => jsonFile.name === paramsFilename)
                                 const paramsJson = paramsJsonFile?.content
                                 const validator = validators?.find(v => v.name === scriptName) || validators?.[0]
+
                                 if (!validator) {
-                                    console.error(`No known validator ${scriptName}`)
+                                    console.error(`No known validator ${scriptName}`)   // shouldnt ever happen tbh
                                     return
                                 }
 
                                 let params: Data[] = []
 
                                 if (paramsJson) {
-                                    const jsonParams = JSON.parse(paramsJson)
-                                    params = constructObject(jsonParams)
+                                    try {
+                                        const jsonParams = JSON.parse(paramsJson)
+                                        params = constructObject(jsonParams)
+                                    } catch (e: any) {
+                                        if (e.message && e.message.includes('JSON.parse')) {
+                                            return dispatch(setAddContractError(`Invalid JSON in ${paramsJsonFile.name}`))
+                                        } else {
+                                            return dispatch(setAddContractError(`JSON in ${paramsJsonFile.name} cannot be converted to Data`))
+                                        }
+                                    }
                                 }
                                 
                                 const parameterizedValidator = {
@@ -172,13 +185,21 @@ function AddContract() {
                                 const nativeScriptJsonFile = jsonFiles.find(jsonFile => jsonFile.name === scriptName)
                                 const nativeScriptJson = nativeScriptJsonFile?.content
                                 if (nativeScriptJson) {
-                                    const parsedNativeScriptJson = JSON.parse(nativeScriptJson)
-                                    const parameterizedValidator = lucid.utils.nativeScriptFromJson(parsedNativeScriptJson)
-                                    dispatch(addContract({
-                                        script: parameterizedValidator,
-                                        name: scriptName!!,
-                                        paramsFileName: nativeScriptJsonFile?.name
-                                    }))
+                                    try {
+                                        const parsedNativeScriptJson = JSON.parse(nativeScriptJson)
+                                        const parameterizedValidator = lucid.utils.nativeScriptFromJson(parsedNativeScriptJson)
+                                        dispatch(addContract({
+                                            script: parameterizedValidator,
+                                            name: scriptName!!.split('.')[0],
+                                            paramsFileName: nativeScriptJsonFile?.name
+                                        }))
+                                    } catch(e: any) {
+                                        if (e.message && e.message.includes('JSON.parse')) {
+                                            return dispatch(setAddContractError(`Invalid JSON in ${nativeScriptJsonFile.name}`))
+                                        } else {
+                                            return dispatch(setAddContractError(`JSON in ${nativeScriptJsonFile.name} is not a valid native script`))
+                                        }
+                                    }
                                 }
                             }
                             

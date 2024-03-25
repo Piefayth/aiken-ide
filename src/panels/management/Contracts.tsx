@@ -29,15 +29,17 @@ function Contracts() {
                         <div 
                             key={`${contract.name}${contract.version}`}
                             className='contract-container'
-                        >
-                                <div className='contract-name'>{contract.name}</div>
+                        >       
+                                <div className='contract-header'>
+                                    <div className='contract-name'>{contract.name}</div>
+                                    <div className='contract-version'>Version {contract.version}</div>
+                                </div>
+                                
                                 <div className='contract-data-holder'>
-                                <div className='contract-params'>
+                                    <div className='contract-params'>
                                         <div className='contract-params-label'>Parameters</div>
                                         <div className='contract-params-content'>{contract.paramsFileName}</div>
                                     </div>
-                                    <div className='contract-version'>Version {contract.version}</div>
-
                                 </div>
  
                                 <div className='delete-contract-button-container'>

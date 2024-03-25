@@ -77,6 +77,9 @@ const managementSlice = createSlice({
         },
         clearAddContractError(state) {
             state.addContractError = undefined
+        },
+        setAddContractError(state, action: PayloadAction<string>) {
+            state.addContractError = action.payload
         }
     }
 })
@@ -87,6 +90,7 @@ export const {
     addWallet,
     addContract,
     removeContract,
-    clearAddContractError
+    clearAddContractError,
+    setAddContractError,
 } = managementSlice.actions
 export default managementSlice.reducer

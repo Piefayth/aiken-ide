@@ -295,6 +295,7 @@
 .contracts-container {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: start;
     min-width: 300px;
     padding: 15px;
@@ -304,6 +305,8 @@
 
 .contract-container {
     margin-left: 20px;
+    margin-bottom: 20px;
+    min-width: 250px;
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -311,6 +314,17 @@
     border: solid 1px  rgb(158, 172, 181);
 }
 
+.contract-header {
+    display: flex;
+    background-color: rgb(37, 36, 76);
+    border: solid 1px  rgb(158, 172, 181);
+    width: 100%;
+    padding: 5px;
+    padding-left: 10px;
+    margin-bottom: 5px;
+    display: flex;
+    box-sizing: border-box;
+}
 
 .delete-contract-button {
     font-size: 16px;
@@ -339,12 +353,8 @@
 }
 
 .contract-name {
-    background-color: rgb(37, 36, 76);
-    width: 100%;
-    padding: 5px;
-    font-size: 18px;
-    box-sizing: border-box;
-    border: solid 1px  rgb(158, 172, 181);
+    font-weight: bold;
+    font-size: 16px;
 }
 
 .contract-version {
@@ -369,7 +379,7 @@
     width: 100%;
 }
 .contract-params-content {
-    margin-left: 20px;
+    margin-left: 5px;
     font-size: 12px;
 }
 
