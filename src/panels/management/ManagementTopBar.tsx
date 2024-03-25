@@ -3,7 +3,7 @@ import '../TopBar.css';
 import { RootState } from '../../app/store';
 
 function ManagementTopBar() {
-    const network = useSelector((state: RootState) => state.management.network)
+    const network = useSelector((state: RootState) => state.lucid.network)
     return (
         <div className='top-bar management-top-bar'>
             <div className='top-bar-item'><strong>Network</strong>: {network}</div>

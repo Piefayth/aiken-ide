@@ -1,15 +1,15 @@
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../../app/store"
-import { useLucid } from "../../../hooks/useLucid"
 import React, { useRef, useState } from "react"
 import { Constr, Data, Script, applyDoubleCborEncoding, applyParamsToScript } from "lucid-cardano"
 import { addContract, clearAddContractError, setAddContractError } from "../../../features/management/managementSlice"
 import { useTooltip } from "../../../hooks/useTooltip"
+import { useLucid } from "../../../components/LucidProvider"
 
 type ScriptKind = 'aiken' | 'native'
 function AddContract() {
     const addButtonRef = useRef<HTMLButtonElement>(null);
-    const { isLucidLoading, lucid: lucidOrUndefined } = useLucid()
+    const { isLucidLoading, lucid: lucidOrNull } = useLucid()
     const [scriptType, setScriptType] = useState<ScriptKind>('aiken')
     const [scriptName, setScriptName] = useState<string | undefined>(undefined)
     const [paramsFilename, setParamsFilename] = useState<string | undefined>(undefined)
@@ -19,17 +19,17 @@ function AddContract() {
     const addContractError = useSelector((state: RootState) => state.management.addContractError)
     const dispatch = useDispatch()
 
-    useTooltip(addContractError || '', addButtonRef, { x: -100, y: -50}, () => {
+    useTooltip(addContractError || '', addButtonRef, { x: -100, y: -50 }, () => {
         dispatch(clearAddContractError())
     })
 
-    if (isLucidLoading || !lucidOrUndefined) {
+    if (isLucidLoading || !lucidOrNull) {
         return (
             <div>{ /* Please wait... */}</div>
         )
     }
 
-    const lucid = lucidOrUndefined!!
+    const lucid = lucidOrNull!!
 
     const validators = buildResults?.flatMap(buildResult => {
         return buildResult.validators
@@ -51,13 +51,17 @@ function AddContract() {
         setParamsFilename(jsonChoices[0])
     }
 
-    const isCreateDisabledClass = scriptName === undefined ? 'disabled' : ''
+    const isCreateDisabledClass = (
+        (scriptType === 'aiken' && validatorChoices.length === 0) ||
+        (scriptType === 'native' && jsonChoices.length === 1)
+     ) ? 'disabled' : ''
 
     return (
-            <div className='add-contract-container'>
-                <div className='add-contract-header'>Add a Contract</div>
+        <div className='add-contract-container'>
+            <div className='add-contract-header'>Add a Contract</div>
+            <div className='add-contract-content'>
                 <div className='add-contract-selection-container'>
-                    <div className='add-contract-input-label'>Script Kind: </div>
+                    <div className='input-label'>Script Kind </div>
                     <select
                         className='add-contract-select'
                         defaultValue={scriptType}
@@ -71,7 +75,7 @@ function AddContract() {
                 </div>
 
                 <div className='add-contract-selection-container'>
-                    <div className='add-contract-input-label'>Validator: </div>
+                    <div className='input-label'>Validator </div>
                     {
                         scriptType === 'aiken' ?
                             (
@@ -116,10 +120,10 @@ function AddContract() {
                 </div>
 
                 <div className='add-contract-selection-container'>
-                    {scriptType === 'aiken' ? <div className='add-contract-input-label'>Params: </div> : null}
+                    {scriptType === 'aiken' ? <div className='input-label'>Params </div> : null}
                     {scriptType === 'aiken' ?
                         (
-                            <select 
+                            <select
                                 className='add-contract-select'
                                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                     setParamsFilename(e.target.value)
@@ -136,11 +140,13 @@ function AddContract() {
                         ) : null
                     }
                 </div>
-                <div className='add-contract-selection-container add-contract-button-container'>
+            </div>
+
+            <div className='add-contract-selection-container add-contract-button-container'>
                     <div></div>
                     <button
                         ref={addButtonRef}
-                        className={`add-contract-button ${isCreateDisabledClass}`}
+                        className={`add-contract-button button ${isCreateDisabledClass}`}
                         onClick={() => {
                             if (scriptType === 'aiken') {
                                 const paramsJsonFile = jsonFiles.find(jsonFile => jsonFile.name === paramsFilename)
@@ -166,7 +172,7 @@ function AddContract() {
                                         }
                                     }
                                 }
-                                
+
                                 const parameterizedValidator = {
                                     type: 'PlutusV2',
                                     script: applyDoubleCborEncoding(
@@ -175,11 +181,15 @@ function AddContract() {
                                         )
                                     )
                                 } as Script
+                                const address = lucid.utils.validatorToAddress(parameterizedValidator)
+                                const scriptHash = lucid.utils.validatorToScriptHash(parameterizedValidator)
 
                                 dispatch(addContract({
                                     script: parameterizedValidator,
                                     name: validator.name,
-                                    paramsFileName: paramsJsonFile?.name || 'None'
+                                    paramsFileName: paramsJsonFile?.name || 'None',
+                                    address,
+                                    scriptHash
                                 }))
                             } else if (scriptType === 'native') {
                                 const nativeScriptJsonFile = jsonFiles.find(jsonFile => jsonFile.name === scriptName)
@@ -188,12 +198,16 @@ function AddContract() {
                                     try {
                                         const parsedNativeScriptJson = JSON.parse(nativeScriptJson)
                                         const parameterizedValidator = lucid.utils.nativeScriptFromJson(parsedNativeScriptJson)
+                                        const address = lucid.utils.validatorToAddress(parameterizedValidator)
+                                        const scriptHash = lucid.utils.validatorToScriptHash(parameterizedValidator)
                                         dispatch(addContract({
                                             script: parameterizedValidator,
                                             name: scriptName!!.split('.')[0],
-                                            paramsFileName: nativeScriptJsonFile?.name
+                                            paramsFileName: nativeScriptJsonFile?.name,
+                                            address,
+                                            scriptHash
                                         }))
-                                    } catch(e: any) {
+                                    } catch (e: any) {
                                         if (e.message && e.message.includes('JSON.parse')) {
                                             return dispatch(setAddContractError(`Invalid JSON in ${nativeScriptJsonFile.name}`))
                                         } else {
@@ -202,11 +216,11 @@ function AddContract() {
                                     }
                                 }
                             }
-                            
+
                         }}
                     >Create Contract</button>
                 </div>
-            </div>
+        </div>
     )
 }
 

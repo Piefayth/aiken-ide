@@ -7,7 +7,7 @@
     height: calc(94vh - 45px); /* 45px is the height of the tabs */
 }
 
-.build-results-heading {
+.management-section-heading {
     font-size: 30px;
     padding: 10px;
     margin-bottom: 10px;

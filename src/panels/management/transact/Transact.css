@@ -1,0 +1,99 @@
+.utxo-selection-container {
+    width: calc(100% - 40px);
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}
+
+.utxo-utxo-selection-container {
+    margin-top: 20px;
+    display: flex;
+    width: 5px;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.utxo-selection-container-options {
+    display:flex;
+}
+
+.utxo-source-selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.utxo-address-selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding-left: 10px;
+}
+
+.utxo-redeemer-selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding-left: 10px;
+}
+
+.utxo-selection-submit-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    padding-left: 10px;
+}
+
+.utxo-source-select {
+    border-radius: 0px;
+    border: 1px solid rgb(158, 172, 181);
+}
+
+.transact-spend-section {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    border-left: solid 3px #408cd8;
+    margin-left: 20px;
+    width: calc(100% - 40px);
+}
+
+.transact-spend-header {
+    font-size: 26px;
+    margin-left: 20px;
+}
+
+.address-text-input {
+    border: 1px solid white;
+    font-size: 16px;
+    background-color: #00000000;
+    height: 17px;
+}
+
+.address-text-input:hover {
+    border: 1px solid white;
+}
+
+.address-text-input:focus {
+    border: 1px solid white;
+    outline: none;
+}
+
+.utxo-wrapper-with-checkbox {
+    display: flex;
+    flex-direction: row;
+}
+
+.utxo-selection-checkbox {
+    margin-right: 10px;
+}
+
+.selected-utxo-border {
+    border: solid 1px rgb(145, 239, 145);
+}
+.selection-submit-button {
+    font-size: 12.5px;
+}

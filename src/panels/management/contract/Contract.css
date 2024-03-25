@@ -32,11 +32,23 @@
     box-sizing: border-box;
 }
 
-.delete-contract-button {
+.button {
     font-size: 16px;
     background-color: rgb(22, 49, 115);
     border: solid 1px  rgb(158, 172, 181);
     padding: 2px;
+}
+
+.button:hover {
+    background-color: rgb(32, 80, 128);
+    cursor: pointer;
+}
+
+.button:active {
+    background-color: rgb(103, 148, 193);
+    cursor: pointer;
+}
+.delete-contract-button {
     padding-left: 5px;
     padding-right: 5px;
     margin: 10px;
@@ -48,15 +60,7 @@
     width: 100%;
 }
 
-.delete-contract-button:hover {
-    background-color: rgb(32, 80, 128);
-    cursor: pointer;
-}
 
-.delete-contract-button:active {
-    background-color: rgb(103, 148, 193);
-    cursor: pointer;
-}
 
 .contract-name {
     font-weight: bold;
@@ -110,8 +114,13 @@
     margin-left: 15px;
     border-left: 2px solid rgb(64, 140, 216);
     border-bottom: 2px solid rgb(64, 140, 216);
-    min-width: 300px;
+    min-width: 200px;
     padding: 10px;
+}
+
+.add-contract-content {
+    display: flex;
+    flex-direction: row;
 }
 
 .add-contract-header {
@@ -122,17 +131,10 @@
 
 .add-contract-selection-container {
     display:flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
-    width: 100%;
-    
-    margin-bottom: 5px;
-}
-
-.add-contract-input-label {
-    margin-right: 50px;
-    padding-left: 20px;
-    font-size: 16px;
+    align-items: start;
+    margin-right: 10px;
 }
 
 .add-contract-select {
@@ -141,10 +143,6 @@
 }
 
 .add-contract-button {
-    font-size: 16px;
-    background-color: rgb(22, 49, 115);
-    border: solid 1px  rgb(158, 172, 181);
-    padding: 2px;
     padding-left: 5px;
     padding-right: 5px;
 }

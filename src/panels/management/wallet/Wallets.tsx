@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux"
 import { RootState } from "../../../app/store"
-import { useLucid } from "../../../hooks/useLucid"
-import { WalletUtxos } from "./WalletUtxos"
+import { useLucid } from "../../../components/LucidProvider"
+import { Wallet } from "./Wallet"
 import './Wallet.css'
 
 function Wallets() {
@@ -13,11 +13,11 @@ function Wallets() {
 
     return (
         <div className='wallets-content'>
-            <div className="build-results-heading"><strong>Wallets</strong></div>
+            <div className="management-section-heading"><strong>Wallets</strong></div>
 
             {
                 wallets.map(wallet => {
-                    return <WalletUtxos key={wallet.address} wallet={wallet} lucid={lucid} />
+                    return <Wallet key={wallet.address} wallet={wallet} lucid={lucid} />
                 })
             }
         </div>

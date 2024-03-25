@@ -11,13 +11,15 @@ type WalletUtxosProps = {
 
 type UtxoProps = {
     utxo: UTxO
+    className?: string
+    withCopy?: boolean
 }
 
-function Utxo({ utxo }: UtxoProps) {
+function Utxo({ utxo, className, withCopy = true }: UtxoProps) {
     return (
-        <div className='utxo-container'>
+        <div className={`utxo-container ${className || ''}`}>
             <div className='txid'>
-                {`${shortenAddress(utxo.txHash, 5, 5)}@${utxo.outputIndex}`} <Copy value={utxo.txHash}/>
+                {`${shortenAddress(utxo.txHash, 5, 5)}@${utxo.outputIndex}`} <span>{withCopy ? <Copy value={utxo.txHash}/> : null}</span>
             </div>
             <div className='asset-container-container'>
                 {
@@ -35,7 +37,7 @@ function Utxo({ utxo }: UtxoProps) {
     )
 }
 
-function WalletUtxos({ wallet, lucid }: WalletUtxosProps) {
+function Wallet({ wallet, lucid }: WalletUtxosProps) {
     const [utxos, setUtxos] = useState<UTxO[] | undefined>(undefined)
     const [utxoError, setUtxoError] = useState<string | undefined>(undefined)
 
@@ -81,4 +83,4 @@ function WalletUtxos({ wallet, lucid }: WalletUtxosProps) {
     )
 }
 
-export { WalletUtxos }
+export { Wallet, Utxo }

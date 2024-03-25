@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../app/store'
 import { Contracts } from './contract/Contracts'
 import { Wallets } from './wallet/Wallets'
-import { Transact } from './Transact'
+import { Transact } from './transact/Transact'
 
 function ManagementPanel() {
     const management = useSelector((state: RootState) => state.management)

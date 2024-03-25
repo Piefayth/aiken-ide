@@ -11,6 +11,8 @@ export interface ContractInput {
     script: Script,
     name: string,
     paramsFileName: string,
+    address: string,
+    scriptHash: string
 }
 
 export interface DeleteContractInput {
@@ -19,12 +21,11 @@ export interface DeleteContractInput {
 }
 
 type Contract = {
-    version: number
+    version: number,
 } & ContractInput
 
 interface ManagementState {
     selectedTabIndex: number
-    network: Network | "Emulator"
     wallets: Wallet[]
     contracts: Contract[],
     addContractError: string | undefined
@@ -32,10 +33,9 @@ interface ManagementState {
 
 const initialState: ManagementState = {
     selectedTabIndex: 0,
-    network: "Emulator",
     wallets: [],
     contracts: [],
-    addContractError: undefined
+    addContractError: undefined,
 }
 
 const managementSlice = createSlice({
@@ -45,11 +45,11 @@ const managementSlice = createSlice({
         selectTab(state, action: PayloadAction<number>) {
             state.selectedTabIndex = action.payload
         },
-        setNetwork(state, action:PayloadAction<Network | "Emulator">) {
-            state.network = action.payload
-        },
         addWallet(state, action: PayloadAction<Wallet>) {
             state.wallets.push(action.payload)
+        },
+        removeWallet(state, action: PayloadAction<string>) {
+            state.wallets.filter(wallet => wallet.address === action.payload)
         },
         addContract(state, action: PayloadAction<ContractInput>) {
             let version = 0
@@ -66,6 +66,7 @@ const managementSlice = createSlice({
                     version = contract.version + 1
                 }
             }
+
             state.contracts.unshift({
                 ...action.payload,
                 version
@@ -80,14 +81,14 @@ const managementSlice = createSlice({
         },
         setAddContractError(state, action: PayloadAction<string>) {
             state.addContractError = action.payload
-        }
+        },
     }
 })
 
 export const { 
     selectTab,
-    setNetwork,
     addWallet,
+    removeWallet,
     addContract,
     removeContract,
     clearAddContractError,

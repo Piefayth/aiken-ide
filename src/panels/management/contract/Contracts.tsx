@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../../app/store"
-import { useLucid } from "../../../hooks/useLucid"
+import { useLucid } from "../../../components/LucidProvider"
 import { AddContract } from "./AddContract"
 import { removeContract } from "../../../features/management/managementSlice"
 import { shortenAddress } from "../../../util/strings"
@@ -28,9 +28,6 @@ function Contracts() {
             <div className='contracts-container'>
             {
                 contracts.map(contract => {
-                    const validatorAddress = lucid.utils.validatorToAddress(contract.script)
-                    const scriptHash = lucid.utils.validatorToScriptHash(contract.script)
-
                     return (
                         <div 
                             key={`${contract.name}${contract.version}`}
@@ -52,7 +49,7 @@ function Contracts() {
                                     <div className='contract-params'>
                                         <div className='contract-params-label'>Address</div>
                                         <div className='contract-params-content'>
-                                            {shortenAddress(validatorAddress)} <Copy value={validatorAddress}/>
+                                            {shortenAddress(contract.address)} <Copy value={contract.address}/>
                                         </div>
                                     </div>
                                 </div>
@@ -61,14 +58,14 @@ function Contracts() {
                                     <div className='contract-params'>
                                         <div className='contract-params-label'>Script Hash</div>
                                         <div className='contract-params-content'>
-                                            {shortenAddress(scriptHash)} <Copy value={scriptHash}/>
+                                            {shortenAddress(contract.scriptHash)} <Copy value={contract.scriptHash}/>
                                         </div>
                                     </div>
                                 </div>
  
                                 <div className='delete-contract-button-container'>
                                     <button 
-                                        className='delete-contract-button'
+                                        className='delete-contract-button button'
                                         onClick={() => dispatch(removeContract({
                                             version: contract.version,
                                             name: contract.name

@@ -101,7 +101,7 @@ function BuildResults() {
 
     return (
         <div className="build-results-content">
-            <div className="build-results-heading"><strong>Build Results</strong></div>
+            <div className="management-section-heading"><strong>Build Results</strong></div>
             { project.buildResults && project.buildResults?.length > 0 ? <></> : <div className="no-last-build-notice"> No last build to display. Click "Test" to compile.</div>}
             {
                 project.buildResults?.map((result, index) => {
