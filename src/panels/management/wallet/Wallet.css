@@ -1,0 +1,80 @@
+.wallets-content {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: calc(94vh - 45px); /* 45px is the height of the tabs */
+}
+
+.wallet-utxos-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.wallet-utxos-address {
+    padding: 5px;
+    padding-left: 15px;
+    /*background-color: rgb(45, 40, 40);*/
+    width:100%;
+    display: flex;
+    align-items: center;
+    font-size: 22px;
+}
+
+.wallet-utxos-address .copy-widget {
+    font-size: 16px;
+}
+
+.utxo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin-left: 30px;
+    border: solid 1px rgb(158, 172, 181);
+    background-color: #0b0b19;
+}
+
+/* .wallet-utxos > div:nth-child(odd) {
+    background-color: #5b5b5b;
+}
+
+.wallet-utxos > div:nth-child(even) {
+    background-color: #4a4a4a;
+} */
+
+.wallet-utxos {
+    min-width: 325px;
+}
+
+.asset-container {
+    display: flex;
+    flex-direction: row;
+    margin-left: 15px;
+    justify-content: space-between;
+}
+
+.asset-label {
+    margin-right: 5px;
+}
+
+.asset-value {
+    margin-right: 15px;
+}
+
+/* .asset-container:nth-child ... ? */
+
+.txid {
+    background-color: rgb(37, 36, 76);;
+    width: 100%;
+    display:flex;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    justify-content: space-between;
+}
+
+.asset-container-container {
+    width: 100%;
+}

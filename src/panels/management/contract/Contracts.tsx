@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from "react-redux"
-import { RootState } from "../../app/store"
-import { useLucid } from "../../hooks/useLucid"
+import { RootState } from "../../../app/store"
+import { useLucid } from "../../../hooks/useLucid"
 import { AddContract } from "./AddContract"
-import { removeContract } from "../../features/management/managementSlice"
-import { shortenAddress } from "../../util/strings"
-import Copy from "../../components/Copy"
+import { removeContract } from "../../../features/management/managementSlice"
+import { shortenAddress } from "../../../util/strings"
+import Copy from "../../../components/Copy"
+import './Contract.css'
 
 function Contracts() {
     const { isLucidLoading, lucid: lucidOrUndefined } = useLucid()

@@ -20,7 +20,7 @@ function Copy({ value }: CopyProps): JSX.Element {
   }
 
   return (
-    <span onClick={handleCopy} className='copy-widget' style={{ cursor: 'pointer' }}>
+    <span title='Copy' onClick={handleCopy} className='copy-widget' style={{ cursor: 'pointer' }}>
       {copied ? '✓' : '📋'}
     </span>
   )

@@ -1,11 +1,7 @@
 # aiken ide
 
-react + redux toolkit
-
-redux wont seem like overkill once we have wallet management and transaction building integrated
-
-trust
-
+idea: stop using deno or the cli to run your scripts. use a websight instead
+stack: react + redux toolkit
 
 todo:
 - aiken modules support (.ak files are totally independent atm)
@@ -17,5 +13,9 @@ todo:
 - compile on a worker thread
 
 - non-emulator networks
+
+- adjust panel sizes by clicking and dragging the divider between them
+
+- selectable aiken version 😭😭😭
 
 - an unimaginably long list of other stuff

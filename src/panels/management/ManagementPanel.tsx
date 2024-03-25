@@ -2,8 +2,8 @@ import './ManagementPanel.css'
 import { BuildResults } from "./BuildResults"
 import { useSelector } from 'react-redux'
 import { RootState } from '../../app/store'
-import { Contracts } from './Contracts'
-import { Wallets } from './Wallets'
+import { Contracts } from './contract/Contracts'
+import { Wallets } from './wallet/Wallets'
 import { Transact } from './Transact'
 
 function ManagementPanel() {

@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux"
-import { RootState } from "../../app/store"
-import { useLucid } from "../../hooks/useLucid"
+import { RootState } from "../../../app/store"
+import { useLucid } from "../../../hooks/useLucid"
 import { WalletUtxos } from "./WalletUtxos"
-
+import './Wallet.css'
 
 function Wallets() {
     const { lucid: lucidOrUndefined} = useLucid()

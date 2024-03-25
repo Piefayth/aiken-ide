@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
-import { Wallet } from "../../features/management/managementSlice"
-import { shortenAddress } from "../../util/strings"
+import { Wallet } from "../../../features/management/managementSlice"
+import { shortenAddress } from "../../../util/strings"
 import { Lucid, UTxO } from "lucid-cardano"
-import Copy from "../../components/Copy"
+import Copy from "../../../components/Copy"
 
 type WalletUtxosProps = {
     wallet: Wallet
@@ -16,10 +16,10 @@ type UtxoProps = {
 function Utxo({ utxo }: UtxoProps) {
     return (
         <div className='utxo-container'>
-            <div>
+            <div className='txid'>
                 {`${shortenAddress(utxo.txHash, 5, 5)}@${utxo.outputIndex}`} <Copy value={utxo.txHash}/>
             </div>
-            <div>
+            <div className='asset-container-container'>
                 {
                     Object.keys(utxo.assets).map(asset => {
                         return (

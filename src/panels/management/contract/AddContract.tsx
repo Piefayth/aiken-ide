@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux"
-import { RootState } from "../../app/store"
-import { useLucid } from "../../hooks/useLucid"
+import { RootState } from "../../../app/store"
+import { useLucid } from "../../../hooks/useLucid"
 import React, { useRef, useState } from "react"
 import { Constr, Data, Script, applyDoubleCborEncoding, applyParamsToScript } from "lucid-cardano"
-import { addContract, clearAddContractError, setAddContractError } from "../../features/management/managementSlice"
-import { useTooltip } from "../../hooks/useTooltip"
+import { addContract, clearAddContractError, setAddContractError } from "../../../features/management/managementSlice"
+import { useTooltip } from "../../../hooks/useTooltip"
 
 type ScriptKind = 'aiken' | 'native'
 function AddContract() {
