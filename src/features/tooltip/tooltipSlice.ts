@@ -1,36 +1,40 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface TooltipData {
+    id: string;
+    message: string;
+    position: {
+        x: number;
+        y: number;
+    };
+}
 
 interface TooltipState {
-    visible: boolean
-    message: string
-    position: {
-        x: number
-        y: number
-    }
+    tooltips: TooltipData[];
 }
 
 const initialState: TooltipState = {
-    visible: false,
-    message: '',
-    position: { x: 0, y: 0 }
-}
+    tooltips: []
+};
 
 const tooltipSlice = createSlice({
     name: 'tooltip',
     initialState,
     reducers: {
-        showTooltip(state, action: PayloadAction<{ message: string,  position: { x: number, y: number } }>) {
-            state.visible = true
-            state.message = action.payload.message
-            state.position = action.payload.position
+        showTooltip(state, action: PayloadAction<TooltipData>) {
+            const { id, message, position } = action.payload;
+            const existingTooltipIndex = state.tooltips.findIndex(tooltip => tooltip.id === id);
+            if (existingTooltipIndex !== -1) {
+                state.tooltips[existingTooltipIndex] = { id, message, position };
+            } else {
+                state.tooltips.push({ id, message, position });
+            }
         },
-        hideTooltip(state) {
-            state.visible = false
-            state.message = '' 
-            state.position = { x: 0, y: 0 } 
+        hideTooltip(state, action: PayloadAction<string>) {
+            state.tooltips = state.tooltips.filter(tooltip => tooltip.id !== action.payload);
         }
     }
-})
+});
 
-export const { showTooltip, hideTooltip } = tooltipSlice.actions
-export default tooltipSlice.reducer
+export const { showTooltip, hideTooltip } = tooltipSlice.actions;
+export default tooltipSlice.reducer;

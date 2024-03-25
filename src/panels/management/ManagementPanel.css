@@ -10,7 +10,10 @@
 .build-results-heading {
     font-size: 30px;
     padding: 10px;
-    margin-left: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    border-bottom: 5px solid rgb(64, 140, 216);
+    display: flex;
 }
 
 .summary {
@@ -23,6 +26,9 @@
     margin: 5px;
 }
 
+.build-result-heading {
+    font-size: 24px;
+}
 
 .warning-number {
     color: rgb(246, 246, 121);
@@ -34,10 +40,6 @@
 
 .test-number {
     color: rgb(81, 137, 241);
-}
-
-.build-results-heading {
-    font-size: 18px;
 }
 
 .build-results-section {
@@ -208,4 +210,84 @@
 
 .asset-label {
     margin-right: 5px;
+}
+
+.contracts-heading {
+    font-size: 30px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    border-bottom: 5px solid rgb(64, 140, 216);
+    display: flex;
+}
+
+.add-contract-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin-left: 15px;
+    border-left: 2px solid rgb(64, 140, 216);
+    border-bottom: 2px solid rgb(64, 140, 216);
+    min-width: 300px;
+    padding: 10px;
+}
+
+.add-contract-header {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.add-contract-selection-container {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    
+    margin-bottom: 5px;
+}
+
+.add-contract-input-label {
+    margin-right: 50px;
+    padding-left: 20px;
+    font-size: 16px;
+}
+
+.add-contract-select {
+    border-radius: 0px;
+    border: 1px solid rgb(158, 172, 181);
+}
+
+.add-contract-button {
+    font-size: 16px;
+    background-color: rgb(22, 49, 115);
+    border: solid 1px  rgb(158, 172, 181);
+    padding: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.add-contract-button:hover {
+    background-color: rgb(32, 80, 128);
+    cursor: pointer;
+}
+
+.add-contract-button:active {
+    background-color: rgb(103, 148, 193);
+    cursor: pointer;
+}
+
+
+.add-contract-button-container {
+    margin-top: 20px;
+}
+
+.disabled {
+    cursor: not-allowed !important;
+    background-color: #cccccc;   
+}
+
+.disabled:hover {
+    cursor: not-allowed !important;
+    background-color: #cccccc !important;   
 }

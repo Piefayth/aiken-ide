@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
-import { ALLOWED_FILE_EXTENSIONS, CURSED_ZERO_WIDTH_SPACE, FILE_EXTENSION_TO_MONACO_LANGUAGE } from '../../constants'
+import { ALLOWED_FILE_EXTENSIONS, FILE_EXTENSION_TO_MONACO_LANGUAGE } from '../../constants'
 
 const SOME_AIKEN_CODE = `use aiken/list
 use aiken/transaction.{
@@ -65,7 +65,7 @@ export interface FileState {
   openFileIndices: number[],
   pendingCloseFileIndex: number,
   beingRenamedFileIndex: number,
-  renameFileError: string | null,
+  renameFileError: string | undefined,
 }
 
 const initialState: FileState = {
@@ -73,12 +73,23 @@ const initialState: FileState = {
     name: 'example.ak',
     content: SOME_AIKEN_CODE,   // when do we update content??
     type: 'aiken'
+  },{
+    name: 'params.json',
+      content: JSON.stringify([{
+        "constructor": 0,
+        "fields": [
+            {
+                "bytes": "7468697369736D79736563726574"
+            }
+        ]
+    }], null, 2),
+    type: 'json'
   }],
   currentFileFocusedInEditorIndex: 0,
   openFileIndices: [0],
   pendingCloseFileIndex: -1,
   beingRenamedFileIndex: -1,
-  renameFileError: null,
+  renameFileError: undefined,
 }
 
 export const filesSlice = createSlice({
@@ -153,6 +164,9 @@ export const filesSlice = createSlice({
     renameFile(state, action: PayloadAction<number>) {
       state.beingRenamedFileIndex = action.payload
     },
+    clearRenameFileError(state) {
+      state.renameFileError = undefined
+    },
     confirmRenameFile(state, action: PayloadAction<string>) {
       const newFilename = action.payload
       const isFilenameUnique = !state.files.find((file, index) => file.name === newFilename && index != state.beingRenamedFileIndex)
@@ -168,20 +182,14 @@ export const filesSlice = createSlice({
         state.files[state.beingRenamedFileIndex].name = newFilename
         state.files[state.beingRenamedFileIndex].type = FILE_EXTENSION_TO_MONACO_LANGUAGE[fileExtension] as 'aiken' | 'json' | 'text'
         state.beingRenamedFileIndex = -1
-        state.renameFileError = null
+        state.renameFileError = undefined
       }
 
-      if (state.renameFileError === errorText && state.renameFileError !== null) {
-        // If the new error is the same as last time, change it
-        // imperceptibly to force a rerender. Sorry.
-        state.renameFileError += CURSED_ZERO_WIDTH_SPACE
-      } else {
-        state.renameFileError = errorText
-      }
+      state.renameFileError = errorText
     },
     cancelRenameFile(state) {
       state.beingRenamedFileIndex = -1
-      state.renameFileError = null
+      state.renameFileError = undefined
     },
     removeFile(state, action: PayloadAction<number>) {
       const deletedFileIndex = action.payload
@@ -219,5 +227,16 @@ export const filesSlice = createSlice({
   }
 })
 
-export const { selectFile, writeFileContents, closeFile, pendingCloseFile, addFile, confirmRenameFile, cancelRenameFile, removeFile, renameFile } = filesSlice.actions
+export const { 
+  selectFile, 
+  writeFileContents, 
+  closeFile, 
+  pendingCloseFile, 
+  addFile, 
+  confirmRenameFile, 
+  cancelRenameFile, 
+  removeFile, 
+  renameFile, 
+  clearRenameFileError 
+} = filesSlice.actions
 export default filesSlice.reducer

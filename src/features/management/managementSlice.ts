@@ -7,18 +7,29 @@ export interface Wallet {
     seed: string
 }
 
+export interface ContractInput {
+    script: Script,
+    name: string
+}
+
+type Contract = {
+    version: number
+} & ContractInput
+
 interface ManagementState {
     selectedTabIndex: number
     network: Network | "Emulator"
     wallets: Wallet[]
-    contracts: Script[]
+    contracts: Contract[],
+    addContractError: string | undefined
 }
 
 const initialState: ManagementState = {
     selectedTabIndex: 0,
     network: "Emulator",
     wallets: [],
-    contracts: []
+    contracts: [],
+    addContractError: undefined
 }
 
 const managementSlice = createSlice({
@@ -34,8 +45,28 @@ const managementSlice = createSlice({
         addWallet(state, action: PayloadAction<Wallet>) {
             state.wallets.push(action.payload)
         },
-        addContract(state, action: PayloadAction<Script>) {
-            state.contracts.push(action.payload)
+        addContract(state, action: PayloadAction<ContractInput>) {
+            let version = 0
+            for (let contract of state.contracts) {
+                const hasSameName = contract.name === action.payload.name 
+                const hasSameProgram = contract.script.script === action.payload.script.script
+                if (hasSameName && hasSameProgram) {
+                    const errorMessage = `Contract already exists as ${contract.name} v${contract.version}.`
+                    state.addContractError = errorMessage
+                    return
+                }
+
+                if (contract.name === action.payload.name && contract.version >= version) {
+                    version = contract.version + 1
+                }
+            }
+            state.contracts.push({
+                ...action.payload,
+                version
+            })
+        },
+        clearAddContractError(state) {
+            state.addContractError = undefined
         }
     }
 })
@@ -44,5 +75,7 @@ export const {
     selectTab,
     setNetwork,
     addWallet,
+    addContract,
+    clearAddContractError
 } = managementSlice.actions
 export default managementSlice.reducer

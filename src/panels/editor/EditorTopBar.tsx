@@ -1,5 +1,5 @@
 import '../TopBar.css';
-import { FormatResult, useAiken } from '../../hooks/useAiken';
+import { BuildResult, FormatResult, useAiken } from '../../hooks/useAiken';
 import { useDispatch, useSelector } from 'react-redux';
 import { testProject } from '../../features/aiken/projectSlice'
 import { useMonacoEditor } from '../../context/MonacoContext';
@@ -20,11 +20,12 @@ function EditorTopBar() {
                 className={`top-bar-item editor-top-bar-item ${maybeDisabledClass}`}
                 onClick={() => {
                     let compiledFiles = []
-                    let buildResults = []
+                    let buildResults: BuildResult[] = []
                     for (let file of files.files) {
                         if (getFileLanguage(file.name) === 'aiken') {
                             compiledFiles.push(file)
-                            buildResults.push(aiken.project.build(file.content, true))
+                            const buildResult = aiken.project.build(file.content, true) as BuildResult
+                            buildResults.push(buildResult)
                         }
                     }
                     dispatch(testProject({ buildResults, compiledFiles }))

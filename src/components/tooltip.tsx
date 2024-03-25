@@ -1,25 +1,30 @@
-import { useSelector } from 'react-redux'
-import { RootState } from '../app/store'
+import { useSelector } from 'react-redux';
+import { RootState } from '../app/store';
 
 function Tooltip() {
-    const { visible, message, position } = useSelector((state: RootState) => state.tooltip)
+    const tooltips = useSelector((state: RootState) => state.tooltip.tooltips);
 
-    if (!visible) {
-        return null
+    if (tooltips.length === 0) {
+        return null;
     }
 
     return (
-        <div
-            style={{
-                position: 'absolute',
-                left: `${position.x}px`,
-                top: `${position.y}px`,
-            }}
-            className='tooltip'
-        >
-            {message}
-        </div>
-    )
+        <>
+            {tooltips.map(({ id, message, position }) => (
+                <div
+                    key={id}
+                    style={{
+                        position: 'absolute',
+                        left: `${position.x}px`,
+                        top: `${position.y}px`,
+                    }}
+                    className="tooltip"
+                >
+                    {message}
+                </div>
+            ))}
+        </>
+    );
 }
 
-export default Tooltip
+export default Tooltip;

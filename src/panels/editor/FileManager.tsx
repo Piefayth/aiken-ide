@@ -1,18 +1,16 @@
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/store"
 import { splitFilename } from "../../util/strings"
-import { selectFile, addFile, confirmRenameFile, cancelRenameFile } from "../../features/files/filesSlice"
+import { selectFile, addFile, confirmRenameFile, cancelRenameFile, clearRenameFileError } from "../../features/files/filesSlice"
 import React, { useEffect, useRef } from "react";
-import { hideTooltip, showTooltip } from "../../features/tooltip/tooltipSlice";
-import { TOOLTIP_EXPIRE_TIME_MS } from "../../constants";
 import { showContextMenu } from "../../features/contextMenu/contextMenuSlice";
+import { useTooltip } from "../../hooks/useTooltip";
 
 function FileManager() {
     const files = useSelector((state: RootState) => state.files)
     const dispatch = useDispatch()
 
     const inputRef = useRef<HTMLInputElement>(null)
-    const timeoutIdRef = useRef<NodeJS.Timeout | null>(null)
 
     // focus and select the name of any file being newly renamed
     useEffect(() => {
@@ -22,35 +20,9 @@ function FileManager() {
         }
     }, [files.beingRenamedFileIndex])
 
-    // manage showing and hiding the error tooltips
-    // TODO: can we refactor this into something reusable?
-    useEffect(() => {
-        if (!files.renameFileError && timeoutIdRef.current) {
-            clearTimeout(timeoutIdRef.current)
-            dispatch(hideTooltip())
-        }
-
-        const rect = inputRef.current?.getBoundingClientRect()
-
-        if (rect && files.renameFileError) {
-            if (timeoutIdRef.current !== null) {
-                clearTimeout(timeoutIdRef.current);
-                timeoutIdRef.current = null
-            }
-
-            dispatch(showTooltip({
-                message: files.renameFileError,
-                position: {
-                    x: rect?.x + 100,
-                    y: rect?.y - 10
-                }
-            }))
-
-            timeoutIdRef.current = setTimeout(() => {
-                dispatch(hideTooltip());
-            }, TOOLTIP_EXPIRE_TIME_MS)
-        }
-    }, [files.renameFileError])
+    useTooltip(files.renameFileError || '', inputRef, { x: 100, y: -10}, () => {
+        dispatch(clearRenameFileError())
+    })
 
     return (
         <div className='file-manager-container'>
@@ -94,6 +66,7 @@ function FileManager() {
                                 >
                                     <input
                                         ref={inputRef}
+                                        key='unique-id'
                                         className='file-rename-input'
                                         type='text'
                                         defaultValue={file.name}

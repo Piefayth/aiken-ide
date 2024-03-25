@@ -1,0 +1,207 @@
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "../../app/store"
+import { useLucid } from "../../hooks/useLucid"
+import React, { useRef, useState } from "react"
+import { Constr, Data, Script, applyDoubleCborEncoding, applyParamsToScript } from "lucid-cardano"
+import { addContract, clearAddContractError } from "../../features/management/managementSlice"
+import { useTooltip } from "../../hooks/useTooltip"
+
+type ScriptKind = 'aiken' | 'native'
+function AddContract() {
+    const addButtonRef = useRef<HTMLButtonElement>(null);
+    const { isLucidLoading, lucid: lucidOrUndefined } = useLucid()
+    const [scriptType, setScriptType] = useState<ScriptKind>('aiken')
+    const [scriptName, setScriptName] = useState<string | undefined>(undefined)
+    const [paramsFilename, setParamsFilename] = useState<string | undefined>(undefined)
+
+    const buildResults = useSelector((state: RootState) => state.project.buildResults)
+    const files = useSelector((state: RootState) => state.files.files)
+    const addContractError = useSelector((state: RootState) => state.management.addContractError)
+    const dispatch = useDispatch()
+
+    useTooltip(addContractError || '', addButtonRef, { x: -100, y: -50}, () => {
+        dispatch(clearAddContractError())
+    })
+
+    if (isLucidLoading || !lucidOrUndefined) {
+        return (
+            <div>{ /* Please wait... */}</div>
+        )
+    }
+
+    const lucid = lucidOrUndefined!!
+
+    const validators = buildResults?.flatMap(buildResult => {
+        return buildResult.validators
+    })
+
+    const validatorChoices = validators?.map(validator => validator.name) || []
+    const jsonFiles = files.filter(file => file.type === 'json')
+    const jsonChoices = jsonFiles.map(file => file.name).concat(['None'])
+
+    if (paramsFilename === undefined && jsonChoices.length > 0) {
+        setParamsFilename(jsonChoices[0])
+    }
+
+    if (scriptName === undefined && validatorChoices.length > 0) {
+        setScriptName(validatorChoices[0])
+    }
+
+    const isCreateDisabledClass = scriptName === undefined ? 'disabled' : ''
+
+    return (
+            <div className='add-contract-container'>
+                <div className='add-contract-header'>Add a Contract</div>
+                <div className='add-contract-selection-container'>
+                    <div className='add-contract-input-label'>Script Kind: </div>
+                    <select
+                        className='add-contract-select'
+                        defaultValue={scriptType}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                            setScriptType(e.target.value as ScriptKind)
+                        }}
+                    >
+                        <option value='aiken'>Aiken</option>
+                        <option value='native'>Native Script</option>
+                    </select>
+                </div>
+
+                <div className='add-contract-selection-container'>
+                    <div className='add-contract-input-label'>Validator: </div>
+                    {
+                        scriptType === 'aiken' ?
+                            (
+                                <select
+                                    className='add-contract-select'
+                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                        setScriptName(e.target.value)
+                                    }}
+                                >
+                                    {validatorChoices?.map((validatorName, index) =>
+                                        <option
+                                            value={validatorName}
+                                            key={validatorName + index} // name alone might not be unique as we build multiple files separately
+                                        >{validatorName}
+                                        </option>
+                                    )}
+                                </select>
+                            ) : (
+                                <select
+                                    className='add-contract-select'
+                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                        setScriptName(e.target.value)
+                                    }}
+                                >
+                                    {jsonChoices?.map(fileName =>
+                                        <option
+                                            value={fileName}
+                                            key={fileName}
+                                        >{fileName}
+                                        </option>
+                                    )}
+                                </select>
+                            )
+                    }
+                </div>
+
+                <div className='add-contract-selection-container'>
+                    {scriptType === 'aiken' ? <div className='add-contract-input-label'>Params: </div> : null}
+                    {scriptType === 'aiken' ?
+                        (
+                            <select 
+                                className='add-contract-select'
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                    if (e.target.value === 'None') {
+                                        return setParamsFilename(undefined)
+                                    }
+                                    setParamsFilename(e.target.value)
+                                }}
+                            >
+                                {jsonChoices?.map(fileName =>
+                                    <option
+                                        value={fileName}
+                                        key={fileName}
+                                    >{fileName}
+                                    </option>
+                                )}
+                            </select>
+                        ) : null
+                    }
+                </div>
+                <div className='add-contract-selection-container add-contract-button-container'>
+                    <div></div>
+                    <button
+                        ref={addButtonRef}
+                        className={`add-contract-button ${isCreateDisabledClass}`}
+                        onClick={() => {
+                            if (scriptType === 'aiken') {
+                                const paramsJson = jsonFiles.find(jsonFile => jsonFile.name === paramsFilename)?.content
+                                const validator = validators?.find(v => v.name === scriptName) || validators?.[0]
+                                if (!validator) {
+                                    console.error(`No known validator ${scriptName}`)
+                                    return
+                                }
+
+                                let params: Data[] = []
+
+                                if (paramsJson) {
+                                    const jsonParams = JSON.parse(paramsJson)
+                                    params = constructObject(jsonParams)
+                                }
+
+                                const parameterizedValidator = {
+                                    type: 'PlutusV2',
+                                    script: applyDoubleCborEncoding(
+                                        applyParamsToScript(
+                                            validator.program, params
+                                        )
+                                    )
+                                } as Script
+
+                                dispatch(addContract({
+                                    script: parameterizedValidator,
+                                    name: validator.name,
+                                }))
+                            } else if (scriptType === 'native') {
+                                const nativeScriptJson = jsonFiles.find(jsonFile => jsonFile.name === scriptName)?.content
+                                if (nativeScriptJson) {
+                                    const parsedNativeScriptJson = JSON.parse(nativeScriptJson)
+                                    const parameterizedValidator = lucid.utils.nativeScriptFromJson(parsedNativeScriptJson)
+                                    dispatch(addContract({
+                                        script: parameterizedValidator,
+                                        name: scriptName!!
+                                    }))
+                                }
+                            }
+                            
+                        }}
+                    >Create Contract</button>
+                </div>
+            </div>
+    )
+}
+
+function constructObject(json: any): any {
+    if (Array.isArray(json)) {
+        return json.map(item => constructObject(item));
+    } else if ('constructor' in json && Array.isArray(json.fields)) {
+        const fields = json.fields.map((field: any) => {
+            if (typeof field === 'object' && field !== null) {
+                return constructObject(field);
+            } else {
+                return field;
+            }
+        });
+        return new Constr(json.constructor, fields);
+    } else if ('bytes' in json) {
+        return json.bytes;
+    } else if ('int' in json) {
+        return json.int;
+    } else if ('map_0' in json) {
+        throw new Error("Map type encountered, operation not supported");
+    } else {
+        throw new Error("Unknown type in JSON structure");
+    }
+}
+
+export { AddContract }

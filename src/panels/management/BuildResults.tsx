@@ -13,7 +13,7 @@ function BuildResults() {
 
         const warningsSegment = !numWarnings || numWarnings <= 0 ? null : (
             <div className="build-results-section warnings">
-                <span className='build-results-heading'>Warnings</span>
+                <span className='build-result-heading'>Warnings</span>
                 {
                     buildResult?.warnings.map((warning, index) => {
                         return (
@@ -34,7 +34,7 @@ function BuildResults() {
 
         const errorsSegment = !numErrors || numErrors <= 0 ? null : (
             <div className="build-results-section errors">
-                <span className='build-results-heading'>Errors</span>
+                <span className='build-result-heading'>Errors</span>
                 {
                     buildResult?.errors.map((error, index) => {
                         return (
@@ -54,7 +54,7 @@ function BuildResults() {
 
         const testsSegment = !numTests || numTests <= 0 ? null : (
             <div className="build-results-section tests">
-                <span className='build-results-heading'>Tests</span>
+                <span className='build-result-heading'>Tests</span>
                 {
                     buildResult?.test_results.map((test) => {
                         return (
