@@ -1,24 +1,31 @@
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../../app/store"
 import { useLucid } from "../../../components/LucidProvider"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { shortenAddress } from "../../../util/strings"
 import { UTxO } from "lucid-cardano"
 import { Utxo } from "../wallet/Wallet"
+import { constructObject } from "../../../util/data"
+import { addSpend, clearAddSpendError, setAddSpendError } from "../../../features/management/transactSlice"
+import { useTooltip } from "../../../hooks/useTooltip"
+import { SerializableUTxO, serializeUtxos } from "../../../util/utxo"
+import { Spend } from "./Transact"
 
-type UtxoSource = 'wallet' | 'contract' | 'custom'
+export type UtxoSource = 'wallet' | 'contract' | 'custom'
 
-type UtxoSelectorProps = {
-    onAddSpend: (utxos: UTxO[]) => void
-}
-
-function UtxoSelector({ onAddSpend }: UtxoSelectorProps) {
+function UtxoSelector() {
     const wallets = useSelector((state: RootState) => state.management.wallets)
     const contracts = useSelector((state: RootState) => state.management.contracts)
     const files = useSelector((state: RootState) => state.files.files)
+    const addSpendError = useSelector((state: RootState) => state.transact.addSpendError)
+    const spends = useSelector((state: RootState) => state.transact.spends)
+
     const [selectedUtxos, setSelectedUtxos] = useState<UTxO[]>([])
     const [redeemerFileName, setRedeemerFileName] = useState<string>('None')
+    const dispatch = useDispatch()
+    const buttonRef = useRef<HTMLButtonElement>(null)
 
+    useTooltip(addSpendError || '', buttonRef, { x: 0, y: 0}, () => dispatch(clearAddSpendError()))
     const { isLucidLoading, lucid: lucidOrNull } = useLucid()
 
     const [sourceUtxos, setSourceUtxos] = useState<UTxO[]>([])
@@ -42,6 +49,13 @@ function UtxoSelector({ onAddSpend }: UtxoSelectorProps) {
         }
     })())
 
+    const usedUtxos = spends.reduce((acc: string[], spend: Spend) => {
+        return acc.concat(spend.utxos.map(utxo => utxo.txHash + utxo.outputIndex))
+    }, [])
+
+    const usableUtxos = sourceUtxos.filter(sourceUtxo => {
+        return !usedUtxos.includes(sourceUtxo.txHash + sourceUtxo.outputIndex)
+    })
 
     useEffect(() => {   // utxo fetching for selected address
         if (isLucidLoading) {
@@ -51,7 +65,7 @@ function UtxoSelector({ onAddSpend }: UtxoSelectorProps) {
 
         if (utxoSource === 'wallet') {
             lucid.wallet.getUtxos()
-                .then((utxos) => {
+                .then((utxos) => {  // TODO: dummy data, changeme
                     utxos.push({
                         ...utxos[0],
                         outputIndex: 1
@@ -157,6 +171,7 @@ function UtxoSelector({ onAddSpend }: UtxoSelectorProps) {
                         className='utxo-source-select'
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                             setUtxoSource(e.target.value as UtxoSource)
+                            setRedeemerFileName('None')
                             setSourceUtxos([])
 
                             if (e.target.value === 'wallet' && wallets.length > 0) {
@@ -185,34 +200,59 @@ function UtxoSelector({ onAddSpend }: UtxoSelectorProps) {
                     }
                 </div>
 
-                <div className='utxo-redeemer-selection-container'>
-                    <div className='input-label'>Redeemer</div>
-                    <select
-                        className='utxo-source-select'
-                        defaultValue='None'
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                            setRedeemerFileName(e.target.value)
-                        }}
-                    >
-                        {
-                            redeemerChoices.map(redeemerFileName => {
-                                return (
-                                    <option
-                                        value={redeemerFileName}
-                                        key={redeemerFileName}
-                                    >
-                                        {redeemerFileName}
-                                    </option>
-                                )
-                            })
-                        }
-                    </select>
-                </div>
+                {
+                    utxoSource === 'wallet' ? null :
+                        <div className='utxo-redeemer-selection-container'>
+                            <div className='input-label'>Redeemer</div>
+                            <select
+                                className='utxo-source-select'
+                                value={redeemerFileName}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                    setRedeemerFileName(e.target.value)
+                                }}
+                            >
+                                {
+                                    redeemerChoices.map(redeemerFileName => {
+                                        return (
+                                            <option
+                                                value={redeemerFileName}
+                                                key={redeemerFileName}
+                                            >
+                                                {redeemerFileName}
+                                            </option>
+                                        )
+                                    })
+                                }
+                            </select>
+                        </div>
+                }
                 <div className='utxo-selection-submit-container'>
-                    <button 
-                        className={`selection-submit-button button ${selectedUtxos.length === 0 ? 'disabled' : '' }`}
+                    <button
+                        ref={buttonRef}
+                        className={`selection-submit-button button ${selectedUtxos.length === 0 ? 'disabled' : ''}`}
+                        disabled={selectedUtxos.length === 0}
                         onClick={() => {
-                            onAddSpend(selectedUtxos)
+                            let redeemerFile = null
+                            if (redeemerFileName && redeemerFileName !== 'None') {
+                                redeemerFile = files.find(file => file.name === redeemerFileName)
+                                try {
+                                    const redeemerJson = JSON.parse(redeemerFile!!.content)
+                                    constructObject(redeemerJson)
+                                } catch (e: any) {
+                                    if (e.message && e.message.includes('JSON.parse')) {
+                                        return dispatch(setAddSpendError(`Invalid JSON in ${redeemerFile?.name}`))
+                                    } else {
+                                        return dispatch(setAddSpendError(`JSON in ${redeemerFile?.name} cannot be converted to Data`))
+                                    }
+                                }
+                            }
+
+                            dispatch(addSpend({
+                                utxos: serializeUtxos(selectedUtxos),
+                                redeemerFileName: redeemerFile?.name || 'None',
+                                source: utxoSource,
+                            }))
+
                             setSelectedUtxos([])
                         }}
                     >
@@ -223,12 +263,12 @@ function UtxoSelector({ onAddSpend }: UtxoSelectorProps) {
 
             <div className='utxo-utxo-selection-container'>
                 {
-                    sourceUtxos.map(utxo => {
+                    usableUtxos.map(utxo => {
                         const isUtxoSelected = !!selectedUtxos.find(selectedUtxo => isSameUtxo(selectedUtxo, utxo))
                         const borderClassName = isUtxoSelected ? 'selected-utxo-border' : ''
                         return (
-                            <div 
-                                key={utxo.txHash + utxo.outputIndex} 
+                            <div
+                                key={utxo.txHash + utxo.outputIndex}
                                 className='utxo-wrapper-with-checkbox'
                             >
                                 <input

@@ -97,3 +97,79 @@
 .selection-submit-button {
     font-size: 12.5px;
 }
+
+.transact-spends-container {
+    margin-left: 20px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.transact-no-spends-yet-message {
+    font-size: 14px;
+}
+.transact-spend-container {
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items:start;
+    border: 1px solid rgb(158, 172, 181);
+    background-color: rgb(5, 39, 7);
+}
+.transact-spends-count-message {
+    font-size: 14px;
+}
+
+.transact-spend-message-container {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.transact-spend-address {
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-right: 20px;
+}
+
+.transact-spend-close {
+    padding: 2px;
+    cursor: pointer;
+    font-size: 1px;
+}
+
+.transact-spend-redeemer {
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-top:5px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.transact-spend-redeemer-filename {
+    margin-top: -5px;
+    padding-left: 10px;
+}
+
+.transact-spend-utxos {
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-top:5px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+.transact-spend-utxo-display {
+    padding: 5px;
+    margin-top: -5px;
+}
+.transact-spend-address-and-close {
+    display: flex;
+    background-color: #25244c;
+    align-items: center;
+}

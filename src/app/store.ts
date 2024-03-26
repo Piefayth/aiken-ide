@@ -5,6 +5,8 @@ import tooltipReducer from '../features/tooltip/tooltipSlice'
 import contextMenuReducer from '../features/contextMenu/contextMenuSlice'
 import managementReducer from '../features/management/managementSlice'
 import lucidReducer from '../features/management/lucidSlice'
+import transactReducer from '../features/management/transactSlice'
+
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +15,8 @@ export const store = configureStore({
     tooltip: tooltipReducer,
     contextMenu: contextMenuReducer,
     management: managementReducer,
-    lucid: lucidReducer
+    lucid: lucidReducer,
+    transact: transactReducer
   },
 })
 

@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux"
 import { RootState } from "../../../app/store"
 import { useLucid } from "../../../components/LucidProvider"
-import { Wallet } from "./Wallet"
 import './Wallet.css'
+import { WalletComponent } from "./Wallet"
 
 function Wallets() {
     const { lucid: lucidOrUndefined} = useLucid()
@@ -17,7 +17,7 @@ function Wallets() {
 
             {
                 wallets.map(wallet => {
-                    return <Wallet key={wallet.address} wallet={wallet} lucid={lucid} />
+                    return <WalletComponent key={wallet.address} wallet={wallet} lucid={lucid} />
                 })
             }
         </div>

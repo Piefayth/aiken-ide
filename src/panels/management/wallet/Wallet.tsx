@@ -37,7 +37,7 @@ function Utxo({ utxo, className, withCopy = true }: UtxoProps) {
     )
 }
 
-function Wallet({ wallet, lucid }: WalletUtxosProps) {
+function WalletComponent({ wallet, lucid }: WalletUtxosProps) {
     const [utxos, setUtxos] = useState<UTxO[] | undefined>(undefined)
     const [utxoError, setUtxoError] = useState<string | undefined>(undefined)
 
@@ -83,4 +83,4 @@ function Wallet({ wallet, lucid }: WalletUtxosProps) {
     )
 }
 
-export { Wallet, Utxo }
+export { WalletComponent, Utxo }
