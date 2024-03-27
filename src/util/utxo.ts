@@ -12,7 +12,6 @@ export declare type SerializableUTxO = {
 
 export declare type SerializableAssets = Record<Unit | "lovelace", string>;
 
-// Function to convert UTxO to SerializableUTxO
 function toSerializableUTxO(utxo: UTxO): SerializableUTxO {
     return {
         ...utxo,
@@ -22,7 +21,6 @@ function toSerializableUTxO(utxo: UTxO): SerializableUTxO {
     };
 }
 
-// Function to convert SerializableUTxO back to UTxO
 function fromSerializableUTxO(serializableUTxO: SerializableUTxO): UTxO {
     return {
         ...serializableUTxO,
@@ -31,6 +29,19 @@ function fromSerializableUTxO(serializableUTxO: SerializableUTxO): UTxO {
         ) as Assets
     };
 }
+
+function serializeAssets(assets: Assets): SerializableAssets {
+    return Object.fromEntries(
+        Object.entries(assets).map(([key, value]) => [key, value.toString()])
+    ) as SerializableAssets;
+}
+
+function deserializeAssets(serializableAssets: SerializableAssets): Assets {
+    return Object.fromEntries(
+        Object.entries(serializableAssets).map(([key, value]) => [key, BigInt(value)])
+    ) as Assets;
+}
+
 
 function serializeUtxos(utxos: UTxO[]) {
     return utxos.map(toSerializableUTxO)
@@ -42,5 +53,7 @@ function deserializeUtxos(sUtxos: SerializableUTxO[]) {
 
 export {
     serializeUtxos,
-    deserializeUtxos
+    deserializeUtxos,
+    serializeAssets,
+    deserializeAssets
 }

@@ -52,18 +52,42 @@
     border: 1px solid rgb(158, 172, 181);
 }
 
-.transact-spend-section {
+.transact-section {
     display: flex;
     flex-direction: column;
     align-items: start;
     border-left: solid 3px #408cd8;
+    border-bottom: solid 3px #408cd8;
     margin-left: 20px;
     width: calc(100% - 40px);
+    margin-top: 20px;
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
-.transact-spend-header {
-    font-size: 26px;
-    margin-left: 20px;
+.transact-section-mint {
+    border-left: solid 3px #40d891;
+    border-bottom: solid 3px #40d891;
+    padding-bottom: 20px;
+    margin-top: 30px;
+    display:flex;
+    flex-direction: column;
+}
+
+.transact-section-payment {
+    border-left: solid 3px #ded285;
+    border-bottom: solid 3px #ded285;
+    margin-top: 30px;
+    display:flex;
+    flex-direction: column;
+}
+
+.transact-section-extra {
+    border-left: solid 3px #cc85de;
+    border-bottom: solid 3px #cc85de;
+    margin-top: 30px;
+    display:flex;
+    flex-direction: column;
 }
 
 .address-text-input {
@@ -106,9 +130,57 @@
     flex-wrap: wrap;
 }
 
-.transact-no-spends-yet-message {
-    font-size: 14px;
+.transact-mint-policy-and-close {
+    display: flex;
+    background-color: #25244c;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
 }
+
+.transact-mint-policy {
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-right: 20px;
+}
+
+.transact-mint-close {
+    padding: 2px;
+    cursor: pointer;
+    font-size: 1px;
+}
+
+.transact-mints-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+.transact-mint-container {
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items:start;
+    border: 1px solid rgb(158, 172, 181);
+    background-color: rgb(5, 39, 7);
+    margin-left: 20px;
+    margin-bottom: 20px;
+    max-width: 300px;
+    min-width: 225px;
+    word-wrap: break-word;
+    word-break: break-all;
+    text-align: left;
+}
+
+.transact-mint-body-container {
+    margin-left: 5px;
+    margin-bottom: 10px;
+}
+
+.transact-spend-header {
+    font-size: 26px;
+    margin-left: 20px;
+    margin-top: -10px;
+}
+
 .transact-spend-container {
     font-size: 14px;
     display: flex;
@@ -117,13 +189,11 @@
     border: 1px solid rgb(158, 172, 181);
     background-color: rgb(5, 39, 7);
 }
-.transact-spends-count-message {
-    font-size: 14px;
-}
 
 .transact-spend-message-container {
     margin-left: 20px;
     margin-bottom: 10px;
+    font-size: 14px;
 }
 
 .transact-spend-address {
@@ -154,6 +224,22 @@
     padding-left: 10px;
 }
 
+.transact-spend-source {
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-top:5px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.transact-spend-source-text {
+    margin-top: -5px;
+    padding-left: 10px;
+}
+
 .transact-spend-utxos {
     padding-left: 5px;
     padding-right: 5px;
@@ -172,4 +258,181 @@
     display: flex;
     background-color: #25244c;
     align-items: center;
+}
+
+.mint-add-container {
+    display: flex;
+    margin-left: 10px;
+}
+
+.mint-policy-selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding-left: 10px;
+}
+
+.mint-quantity-selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding-left: 10px;
+}
+
+.mint-asset-selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding-left: 10px;
+}
+
+.mint-source-select {
+    border-radius: 0px;
+    border: 1px solid rgb(158, 172, 181);
+    min-width: 100px;
+}
+.add-mint-button {
+    font-size: 12.5px;
+}
+
+.text-input {
+    border: 1px solid white;
+    font-size: 14px;
+    background-color: #00000000;
+    height: 17px;
+    width: 100px;
+}
+
+.text-input:hover {
+    border: 1px solid white;
+}
+
+.text-input:focus {
+    border: 1px solid white;
+    outline: none;
+}
+
+
+.add-mint-button-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    
+    padding-left: 10px;
+}
+
+.payment-add-container {
+    display: flex;
+    margin-left: 10px;
+}
+
+.selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding-left: 10px;
+}
+
+.select {
+    border-radius: 0px;
+    border: 1px solid rgb(158, 172, 181);
+    min-width: 100px;
+}
+
+.text-input {
+    border: 1px solid white;
+    font-size: 15px;
+    background-color: #00000000;
+    height: 17px;
+}
+
+.transact-payment-error-container {
+    padding-left: 20px;
+    color: rgb(255, 147, 83);
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.transact-payment-message-container {
+    margin-left: 20px;
+    font-size: 14px;
+}
+
+.payments-added-assets-container {
+    margin-left: 20px;
+    margin-bottom: 20px;
+    display:flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.added-asset-container {
+    border: 1px solid rgb(158, 172, 181);
+    font-size: 14px;
+    display: flex;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.added-asset-name {
+    background-color: rgb(20, 30, 120);
+    padding: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.added-asset-quantity {
+    background-color: rgb(22, 5, 51);
+    padding: 2px;
+}
+.added-asset-remove {
+    color: rgb(213, 114, 114);
+    background-color:rgb(22, 5, 51);
+    align-self: center;
+    font-size: 10px;
+    padding:2px;
+    cursor: pointer;
+}
+
+.added-assets-empty {
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+.payment-asset-add {
+    display: flex;
+    margin: 10px;
+}
+
+.button-secondary {
+    background-color: rgb(7, 62, 7);
+}
+
+.button-secondary:hover {
+    background-color: rgb(15, 88, 15);
+}
+
+.payment-container {
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items:start;
+    border: 1px solid rgb(158, 172, 181);
+    background-color: rgb(5, 39, 7);
+    margin-left: 20px;
+    margin-bottom: 20px;
+    max-width: 300px;
+    min-width: 225px;
+    word-wrap: break-word;
+    word-break: break-all;
+    text-align: left;
+}
+
+.transact-extras-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.transact-payments-container {
+    display: flex;
+    flex-wrap: wrap;
 }

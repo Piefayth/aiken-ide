@@ -6,10 +6,9 @@ import { shortenAddress } from "../../../util/strings"
 import { UTxO } from "lucid-cardano"
 import { Utxo } from "../wallet/Wallet"
 import { constructObject } from "../../../util/data"
-import { addSpend, clearAddSpendError, setAddSpendError } from "../../../features/management/transactSlice"
+import { Spend, addSpend, clearAddSpendError, setAddSpendError } from "../../../features/management/transactSlice"
 import { useTooltip } from "../../../hooks/useTooltip"
 import { SerializableUTxO, serializeUtxos } from "../../../util/utxo"
-import { Spend } from "./Transact"
 
 export type UtxoSource = 'wallet' | 'contract' | 'custom'
 
@@ -65,31 +64,7 @@ function UtxoSelector() {
 
         if (utxoSource === 'wallet') {
             lucid.wallet.getUtxos()
-                .then((utxos) => {  // TODO: dummy data, changeme
-                    utxos.push({
-                        ...utxos[0],
-                        outputIndex: 1
-                    })
-                    utxos.push({
-                        ...utxos[0],
-                        outputIndex: 2
-                    })
-                    utxos.push({
-                        ...utxos[0],
-                        outputIndex: 3
-                    })
-                    utxos.push({
-                        ...utxos[0],
-                        outputIndex: 4
-                    })
-                    utxos.push({
-                        ...utxos[0],
-                        outputIndex: 5
-                    })
-                    utxos.push({
-                        ...utxos[0],
-                        outputIndex: 6
-                    })
+                .then((utxos) => {
                     setSourceUtxos(utxos)
                 })
                 .catch(console.error)
@@ -262,6 +237,9 @@ function UtxoSelector() {
             </div>
 
             <div className='utxo-utxo-selection-container'>
+                {
+                    usableUtxos.length === 0 ? <div style={{fontSize: '13px'}}>⚠ No unused UTxOs found at selected address.</div> : null
+                }
                 {
                     usableUtxos.map(utxo => {
                         const isUtxoSelected = !!selectedUtxos.find(selectedUtxo => isSameUtxo(selectedUtxo, utxo))
