@@ -13,8 +13,16 @@ function Payments() {
     const spends = useSelector((state: RootState) => state.transact.spends)
     const mints = useSelector((state: RootState) => state.transact.mints)
     const files = useSelector((state: RootState) => state.files.files)
+    const { wallets, contracts } = useSelector((state: RootState) => state.management)
 
-    const [toAddress, setToAddress] = useState<string>('')
+    const knownAddresses = contracts
+    .map(contract => contract.address)
+    .concat(
+        wallets
+            .map(wallet => wallet.address)
+    )
+
+    const [toAddress, setToAddress] = useState<string>(knownAddresses[0] || '')
     const [asset, setAsset] = useState<string>('lovelace')
     const [quantity, setQuantity] = useState<bigint>(0n)
     const [datumFileName, setDatumFileName] = useState<string>('None')
@@ -160,12 +168,23 @@ function Payments() {
             <div className='payment-add-container'>
                 <div className='selection-container'>
                     <div className='input-label'>To Address</div>
-                    <input
-                        type='text'
-                        className='text-input'
+                    <select
                         value={toAddress}
                         onChange={(e) => setToAddress(e.target.value)}
-                    />
+                    >
+                        {
+                            knownAddresses.map(knownAddress => {
+                                return (
+                                    <option
+                                        value={knownAddress}
+                                        key={knownAddress}
+                                    >
+                                        {shortenAddress(knownAddress)}
+                                    </option>
+                                )
+                            })
+                        }
+                    </select>
                 </div>
 
                 <div className='selection-container'>

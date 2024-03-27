@@ -339,6 +339,24 @@
     min-width: 100px;
 }
 
+input {
+    border-radius: 0px;
+    border: 1px solid rgb(158, 172, 181);
+}
+input:hover {
+    border: 1px solid rgb(158, 172, 181);
+    outline: none;
+}
+input:focus {
+    border: 1px solid rgb(158, 172, 181);
+    outline: none;
+}
+
+select {
+    border-radius: 0px;
+    border: 1px solid rgb(158, 172, 181);
+}
+
 .text-input {
     border: 1px solid white;
     font-size: 15px;
@@ -429,10 +447,32 @@
 
 .transact-extras-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    margin-left: 20px;
 }
 
 .transact-payments-container {
     display: flex;
     flex-wrap: wrap;
+}
+
+.select-multiple {
+    max-height: 75px;
+}
+
+.extra-signers-input-container{
+    margin-bottom: 20px;
+}
+
+.validity-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin-bottom: 10px;
+}
+
+.extra-signers-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
 }

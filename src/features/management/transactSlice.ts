@@ -2,6 +2,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { UtxoSource } from '../../panels/management/transact/UtxoSelector'
 import { SerializableAssets, SerializableUTxO } from '../../util/utxo'
 
+type SerializedDate = string
+
+export type ValidityInterval = {
+    from: SerializedDate,
+    to: SerializedDate
+}
+
 export type Spend = {
     source: UtxoSource,
     redeemerFileName: string,
@@ -25,13 +32,22 @@ interface TransactState {
     spends: Spend[]
     mints: Mint[]
     payments: Payment[]
+    extraSigners: string[]
+    validity: ValidityInterval
+    metadataFilename: string
 }
 
 const initialState: TransactState = {
     addSpendError: undefined,
     spends: [],
     mints: [],
-    payments: []
+    payments: [],
+    extraSigners: [],
+    validity: {
+        from: '',
+        to: ''
+    },
+    metadataFilename: 'None'
 }
 
 
@@ -58,12 +74,21 @@ const transactSlice = createSlice({
         removePayment(state, action: PayloadAction<number>) {
             state.payments.splice(action.payload, 1)
         },
+        setExtraSigners(state, action: PayloadAction<string[]>) {
+            state.extraSigners = action.payload
+        },
+        setValidityInterval(state, action: PayloadAction<ValidityInterval>) {
+            state.validity = action.payload
+        },
+        setMetadata(state, action: PayloadAction<string>) {
+            state.metadataFilename = action.payload
+        },
         setAddSpendError(state, action: PayloadAction<string>) {
             state.addSpendError = action.payload
         },
         clearAddSpendError(state) {
             state.addSpendError = undefined
-        }
+        },
     }
 })
 
@@ -75,6 +100,9 @@ export const {
     addMint,
     removeMint,
     addPayment,
-    removePayment
+    removePayment,
+    setExtraSigners,
+    setValidityInterval,
+    setMetadata
 } = transactSlice.actions
 export default transactSlice.reducer

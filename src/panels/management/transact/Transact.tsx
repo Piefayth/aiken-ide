@@ -30,12 +30,7 @@ function Transact() {
             <Mints />
 
             <Payments />
-            {
-                // when we do the 'pay' panel
-                // it should only enumerate assets that are actually in your utxos
-                // and let you select those from a dropdown
-            }
-
+            
             <Extras />
 
         </div>
