@@ -3,7 +3,7 @@ import { RootState } from "../../../app/store"
 import { useState } from "react"
 import { SerializableAssets } from "../../../util/utxo"
 import { useLucid } from "../../../components/LucidProvider"
-import { Mint, Payment, addPayment, removePayment } from "../../../features/management/transactSlice"
+import { Mint, Payment, Spend, addPayment, removePayment } from "../../../features/management/transactSlice"
 import { toText } from "lucid-cardano"
 import { shortenAddress } from "../../../util/strings"
 
@@ -16,14 +16,14 @@ function Payments() {
     const { wallets, contracts } = useSelector((state: RootState) => state.management)
 
     const knownAddresses = contracts
-    .map(contract => contract.address)
-    .concat(
-        wallets
-            .map(wallet => wallet.address)
-    )
+        .map(contract => contract.address)
+        .concat(
+            wallets
+                .map(wallet => wallet.address)
+        )
 
     const [toAddress, setToAddress] = useState<string>(knownAddresses[0] || '')
-    const [asset, setAsset] = useState<string>('lovelace')
+    const [_asset, setAsset] = useState<string>('lovelace')
     const [quantity, setQuantity] = useState<bigint>(0n)
     const [datumFileName, setDatumFileName] = useState<string>('None')
 
@@ -41,19 +41,14 @@ function Payments() {
         }
     })()
 
-    const isCurrentSelectionValid = quantity > 0 && asset
-
-
-
     const mintAssets = mints.reduce((acc: SerializableAssets, cur: Mint) => {
-        const assetName = `${cur.policyId}${cur.assetName}`
-
-        if (acc[assetName]) {
-            acc[assetName] = (BigInt(acc[assetName]) + BigInt(cur.amount)).toString()
-        } else {
-            acc[assetName] = cur.amount.toString()
-        }
-
+        Object.entries(cur.assets).forEach(([assetName, amount]) => {
+            if (acc[assetName]) {
+                acc[assetName] = (BigInt(acc[assetName]) + BigInt(amount)).toString()
+            } else {
+                acc[assetName] = amount.toString()
+            }
+        })
         return acc
     }, {} as SerializableAssets)
 
@@ -86,6 +81,15 @@ function Payments() {
         )
     })()
 
+    const chosenAsset = (() => {
+        if (Object.keys(allSpendableAssets).length > 0 && !Object.keys(allSpendableAssets).includes(_asset)) {
+            return 'lovelace'
+         } else {
+            return _asset
+         }
+    })()
+
+    const isCurrentSelectionValid = quantity > 0 && chosenAsset
     const atleastOneAssetInPayment = Object.keys(addedAssets).length > 0
     const isPaymentValid = isAddressValid && atleastOneAssetInPayment
 
@@ -119,6 +123,7 @@ function Payments() {
                         return (
                             <div
                                 className='payment-container'
+                                key={index}
                             >
 
                                 <div className='transact-mint-policy-and-close'>
@@ -153,7 +158,7 @@ function Payments() {
                                                 Object.keys(payment.assets)
                                                     .map(assetName => {
                                                         return (
-                                                            <div>{assetName === 'lovelace' ? assetName : toText(assetName.substring(56))} ({payment.assets[assetName]})</div>
+                                                            <div key={assetName}>{assetName === 'lovelace' ? assetName : toText(assetName.substring(56))} ({payment.assets[assetName]})</div>
                                                         )
                                                     })
                                             }
@@ -179,35 +184,41 @@ function Payments() {
                                         value={knownAddress}
                                         key={knownAddress}
                                     >
-                                        {shortenAddress(knownAddress)}
+                                        {
+                                            `${contracts.find(contract => contract.address === knownAddress) ?
+                                                '(Script) ' : '(Wallet) '}${shortenAddress(knownAddress)}`
+                                        }
                                     </option>
                                 )
                             })
                         }
                     </select>
                 </div>
+                {
+                        <div className='selection-container'>
+                            <div className='input-label'>Datum</div>
+                            <select
+                                className='select'
+                                value={datumFileName}
+                                onChange={(e) => setDatumFileName(e.target.value)}
+                            >
+                                {
+                                    jsonChoices.map(fileName => {
+                                        return (
+                                            <option
+                                                key={fileName}
+                                                value={fileName}
+                                            >
+                                                {fileName}
+                                            </option>
+                                        )
+                                    })
+                                }
+                            </select>
+                        </div>
 
-                <div className='selection-container'>
-                    <div className='input-label'>Datum</div>
-                    <select
-                        className='select'
-                        value={datumFileName}
-                        onChange={(e) => setDatumFileName(e.target.value)}
-                    >
-                        {
-                            jsonChoices.map(fileName => {
-                                return (
-                                    <option
-                                        key={fileName}
-                                        value={fileName}
-                                    >
-                                        {fileName}
-                                    </option>
-                                )
-                            })
-                        }
-                    </select>
-                </div>
+                }
+
 
                 <div className='add-mint-button-container'>
                     <button
@@ -219,7 +230,7 @@ function Payments() {
                                 assets: addedAssets,
                                 toAddress,
                             }))
-                            setToAddress('')
+                            setQuantity(0n)
                             setDatumFileName('None')
                             setAddedAssets({})
                         }}
@@ -234,12 +245,12 @@ function Payments() {
                 <div className='selection-container'>
                     <div className='input-label'>Asset</div>
                     <select
-                        value={asset}
+                        value={chosenAsset}
                         className='select'
                         onChange={(e) => {
                             setAsset(e.target.value)
                         }}
-                    >
+                    >   
                         {
                             Object.keys(allSpendableAssets).map(spendableAssetName => {
                                 return (
@@ -260,6 +271,7 @@ function Payments() {
                     <input
                         type='number'
                         className='text-input'
+                        value={quantity.toString()}
                         onChange={(e) => {
                             try {
                                 const value = parseInt(e.target.value)
@@ -276,15 +288,15 @@ function Payments() {
                         disabled={!isCurrentSelectionValid}
                         className={`add-mint-button button-secondary button ${isCurrentSelectionValid ? '' : 'disabled'}`}
                         onClick={() => {
-                            if (!addedAssets[asset]) {
+                            if (!addedAssets[chosenAsset]) {
                                 setAddedAssets({
                                     ...addedAssets,
-                                    [asset]: quantity.toString()
+                                    [chosenAsset]: quantity.toString()
                                 })
                             } else {
                                 setAddedAssets({
                                     ...addedAssets,
-                                    [asset]: (quantity + BigInt(addedAssets[asset])).toString()
+                                    [chosenAsset]: (quantity + BigInt(addedAssets[chosenAsset])).toString()
                                 })
                             }
                         }}

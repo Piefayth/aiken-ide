@@ -4,11 +4,13 @@ import { fromText, toText } from 'lucid-cardano'
 import { useLucid } from "../../../components/LucidProvider"
 import { shortenAddress } from "../../../util/strings"
 import { useState } from "react"
-import { addMint, removeMint } from "../../../features/management/transactSlice"
+import { Mint, addMint, removeMint } from "../../../features/management/transactSlice"
+import { SerializableAssets } from "../../../util/utxo"
 
 function Mints() {
     const dispatch = useDispatch()
     const contracts = useSelector((state: RootState) => state.management.contracts)
+    const files = useSelector((state: RootState) => state.files.files)
     const mints = useSelector((state: RootState) => state.transact.mints)
 
     const [policyId, setPolicyId] = useState<string | undefined>(() => {
@@ -17,18 +19,33 @@ function Mints() {
         }
     })
     const [assetName, setAssetName] = useState<string>('')
-    const [amount, setAmount] = useState<number>(0)
+    const [quantity, setQuantity] = useState<bigint>(0n)
+    const [redeemerFileName, setRedeemerFileName] = useState<string>('None')
+    const [addedAssets, setAddedAssets] = useState<SerializableAssets>({})
 
     const { isLucidLoading, lucid: _lucid } = useLucid()
     const lucid = _lucid!!  // [safety] parent wont render this if (!lucid)
 
-    const isFormComplete = !!policyId && !!assetName && !!amount
+    const isFormComplete = !!policyId && Object.keys(addedAssets).length > 0
+
+    if (policyId === undefined) {
+        if (contracts.length > 0) {
+            setPolicyId(contracts[0].scriptHash)
+        }
+    }
+
+    const redeemerChoices = files
+        .filter(file => file.name.endsWith('.json'))
+        .map(file => file.name)
+        .concat('None')
+
+    const isCurrentSelectionValid = quantity > 0 && assetName
 
     return (
         <div className='transact-section transact-section-mint'>
             <div className='transact-spend-header'>Mint</div>
             <div className='transact-spend-message-container'>
-                {`Minting ${mints.length} asset(s).`}
+                {`Minting ${mints.length} set(s) of assets.`}
             </div>
             <div className='transact-mints-container'>
                 {
@@ -55,21 +72,35 @@ function Mints() {
                                     </div>
                                 </div>
 
-
+                                <div className='transact-spend-source'>
+                                        <div className='input-label'>Redeemer</div>
+                                        <div className='transact-spend-source-text'>
+                                            {mint.redeemerFileName}
+                                        </div>
+                                    </div>
+                                
+                                <div className='transact-mint-assets-container'>
+                                            Assets:
+                                </div>
                                 <div className='transact-mint-body-container'>
-                                    <div className='transact-spend-source'>
-                                        <div className='input-label'>Asset Name</div>
-                                        <div className='transact-spend-source-text'>
-                                            {toText(mint.assetName)}
-                                        </div>
-                                    </div>
+                                    {
+                                        Object.keys(mint.assets).map(assetName => {
+                                            return (
+                                                <div key={assetName}>
+                                                    <div className='transact-mint-source'>
+                                                        <div className='input-label'>{toText(assetName.substring(56))}</div>
+                                                        <div className='transact-mint-source-text'>
+                                                            {mint.assets[assetName]}
+                                                        </div>
+                                                        
+                                                        </div>
+                                                </div>
+                                            )
+                                        })
+                                    }
 
-                                    <div className='transact-spend-source'>
-                                        <div className='input-label'>Amount</div>
-                                        <div className='transact-spend-source-text'>
-                                            {mint.amount}
-                                        </div>
-                                    </div>
+
+
                                 </div>
                             </div>
                         )
@@ -100,6 +131,50 @@ function Mints() {
                         }
                     </select>
                 </div>
+
+                <div className='utxo-redeemer-selection-container'>
+                    <div className='input-label'>Redeemer</div>
+                    <select
+                        className='utxo-source-select'
+                        value={redeemerFileName}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                            setRedeemerFileName(e.target.value)
+                        }}
+                    >
+                        {
+                            redeemerChoices.map(redeemerFileName => {
+                                return (
+                                    <option
+                                        value={redeemerFileName}
+                                        key={redeemerFileName}
+                                    >
+                                        {redeemerFileName}
+                                    </option>
+                                )
+                            })
+                        }
+                    </select>
+                </div>
+
+                <div className='add-mint-button-container'>
+                    <button
+                        disabled={!isFormComplete}
+                        className={`add-mint-button button ${isFormComplete ? '' : 'disabled'}`}
+                        onClick={() => {
+                            dispatch(addMint({
+                                policyId: policyId!!, // [safety] button is disabled if policyId is u/d
+                                assets: addedAssets,
+                                redeemerFileName
+                            }))
+                            setQuantity(0n)
+                            setAssetName('')
+                            setRedeemerFileName('None')
+                            setAddedAssets({})
+                        }}
+                    >Add Mint</button>
+                </div>
+            </div>
+            <div className='payment-asset-add'>
                 <div className='mint-asset-selection-container'>
                     <div className='input-label'>Asset Name</div>
                     <input
@@ -111,41 +186,71 @@ function Mints() {
                         }}
                     />
                 </div>
-                <div className='mint-quantity-selection-container'>
-                    <div className='input-label'>Amount</div>
+
+                <div className='selection-container'>
+                    <div className='input-label'>Quantity</div>
                     <input
-                        className='text-input'
                         type='number'
-                        value={amount}
+                        className='text-input'
+                        value={quantity.toString()}
                         onChange={(e) => {
                             try {
-                                const amount = parseInt(e.target.value)
-                                setAmount(amount)
+                                const value = parseInt(e.target.value)
+                                setQuantity(value > 0 ? BigInt(value) : 0n)
                             } catch (e) {
-
+                                setQuantity(0n)
                             }
                         }}
                     />
                 </div>
+
                 <div className='add-mint-button-container'>
                     <button
-                        disabled={!isFormComplete}
-                        className={`add-mint-button button ${isFormComplete ? '' : 'disabled'}`}
+                        disabled={!isCurrentSelectionValid}
+                        className={`add-mint-button button-secondary button ${isCurrentSelectionValid ? '' : 'disabled'}`}
                         onClick={() => {
-                            // TODO: Error if trying to mint the same policy + asset twice
-                            dispatch(addMint({
-                                policyId: policyId!!, // [safety] button is disabled if policyId is u/d
-                                assetName: fromText(assetName),
-                                amount
-                            }))
-                            setAmount(0)
-                            setAssetName('')
+                            const assetId = policyId + fromText(assetName)
+                            if (!addedAssets[assetId]) {
+                                setAddedAssets({
+                                    ...addedAssets,
+                                    [assetId]: quantity.toString()
+                                })
+                            } else {
+                                setAddedAssets({
+                                    ...addedAssets,
+                                    [assetId]: (quantity + BigInt(addedAssets[assetId])).toString()
+                                })
+                            }
                         }}
-                    >Add Mint</button>
+                    >
+                        Include Asset
+                    </button>
                 </div>
+            </div>
+            <div className='payments-added-assets-container'>
+                {
+                    Object.keys(addedAssets).length === 0 ?
+                        (<div className='added-assets-empty'>To add a payment, add at least one asset.</div>) :
+                        Object.keys(addedAssets).map((addedAsset) => {
+                            return (
+                                <div
+                                    className='added-asset-container'
+                                    key={addedAsset}
+                                >
+                                    <div className='added-asset-name'>{toText(addedAsset.substring(56))}</div>
+                                    <div className='added-asset-quantity'>{addedAssets[addedAsset]}</div>
+                                    <div
+                                        className='added-asset-remove'
+                                        onClick={() => {
+                                            setAddedAssets(({ [addedAsset]: _, ...addedAssets }) => addedAssets)
+                                        }}
+                                    >❌</div>
+                                </div>
+                            )
+                        })
+                }
 
             </div>
-
         </div>
     )
 }

@@ -119,3 +119,20 @@ body {
   font-weight: bold;
   margin-bottom: 2px;
 }
+
+.button {
+  font-size: 16px;
+  background-color: rgb(22, 49, 115);
+  border: solid 1px  rgb(158, 172, 181);
+  padding: 2px;
+}
+
+.button:hover {
+  background-color: rgb(32, 80, 128);
+  cursor: pointer;
+}
+
+.button:active {
+  background-color: rgb(103, 148, 193);
+  cursor: pointer;
+}

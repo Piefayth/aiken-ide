@@ -9,10 +9,8 @@
 .utxo-utxo-selection-container {
     margin-top: 20px;
     display: flex;
-    width: 5px;
-    justify-content: space-between;
-    width: 100%;
     flex-wrap: wrap;
+    justify-content: flex-start;
     gap: 20px;
 }
 
@@ -62,7 +60,7 @@
     width: calc(100% - 40px);
     margin-top: 20px;
     word-wrap: break-word;
-    word-break: break-all;
+    word-break: normal;
 }
 
 .transact-section-mint {
@@ -475,4 +473,58 @@ select {
     display: flex;
     flex-direction: column;
     align-items: start;
+}
+
+.transact-submit {
+    min-height: 300px;
+    margin-right: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.transact-submit-button-container {
+    padding-right: 20px;
+    padding-top: 20px;
+    width: calc(40% - 20px);
+}
+
+.submit-transaction-button {
+    font-size: 24px;
+    padding: 5px;
+}
+
+.transact-feedback-display {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width: calc(60% - 40px);
+    margin-left: 40px;
+}
+
+.transact-feedback-heading {
+    font-size: 24px;
+}
+
+.transact-mint-assets-container {
+    font-weight: bold;
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+.transact-mint-source {
+    padding-left: 25px;
+    padding-right: 5px;
+    margin-top:5px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.transact-mint-source-text {
+    margin-top: -5px;
+    padding-left: 10px;
 }

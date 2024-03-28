@@ -20,7 +20,7 @@ export interface DeleteContractInput {
     version: number
 }
 
-type Contract = {
+export type Contract = {
     version: number,
 } & ContractInput
 

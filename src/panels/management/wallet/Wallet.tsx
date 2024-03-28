@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Wallet } from "../../../features/management/managementSlice"
 import { shortenAddress } from "../../../util/strings"
-import { Lucid, UTxO } from "lucid-cardano"
+import { Lucid, UTxO, toText } from "lucid-cardano"
 import Copy from "../../../components/Copy"
 
 type WalletUtxosProps = {
@@ -26,7 +26,7 @@ function Utxo({ utxo, className, withCopy = true }: UtxoProps) {
                     Object.keys(utxo.assets).map(asset => {
                         return (
                             <div key={asset} className='asset-container'>
-                                <div className='asset-label'>{asset}: </div>
+                                <div className='asset-label'>{asset === 'lovelace' ? 'lovelace' : toText(asset.substring(56))} </div>
                                 <div className='asset-value'>{utxo.assets[asset].toString()}</div>
                             </div>
                         )
@@ -49,9 +49,14 @@ function WalletComponent({ wallet, lucid }: WalletUtxosProps) {
             .catch((e: any) => {
                 setUtxoError(e.message) // what type is e actually tho
             })
-    }, [wallet])
+    }, [wallet, lucid])
+
+    if (!lucid) {
+        return
+    }
 
     const shortAddress = shortenAddress(wallet.address)
+    const pkh = lucid.utils.getAddressDetails(wallet.address).paymentCredential?.hash!!
 
     return (
         <div
@@ -63,6 +68,16 @@ function WalletComponent({ wallet, lucid }: WalletUtxosProps) {
             >
                 {shortAddress} <Copy value={wallet.address} />
             </div>
+            <div
+                className='wallet-utxos-pkh'
+            >
+                <div className='input-label'>
+                    pkh
+                </div>
+                <div>
+                    {shortenAddress(pkh, 4, 4)} <Copy value={pkh}/>
+                </div>
+            </div>
             {
                 utxoError === undefined ?
                     (
@@ -70,9 +85,9 @@ function WalletComponent({ wallet, lucid }: WalletUtxosProps) {
                             className='wallet-utxos'
                         >
                             {
-                                utxos?.map(utxo => {
+                                utxos?.length ? utxos?.map(utxo => {
                                     return <Utxo key={utxo.txHash + utxo.outputIndex} utxo={utxo}/>
-                                })
+                                }) : (<div>No UTxOs at this address.</div>)
                             }
                         </div>
                     ) :

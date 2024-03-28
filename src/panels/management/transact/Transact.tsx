@@ -6,11 +6,9 @@ import { Spends } from "./Spends"
 import { Mints } from "./Mints"
 import { Payments } from "./Payments"
 import { Extras } from "./Extras"
+import { Submit } from "./Submit"
 
 function Transact() {
-    const spends = useSelector((state: RootState) => state.transact.spends)
-    const dispatch = useDispatch()
-
     const { isLucidLoading, lucid: lucidOrNull } = useLucid()
 
 
@@ -21,6 +19,8 @@ function Transact() {
     }
 
     const lucid = lucidOrNull!!
+
+
     return (
         <div className='transact-content'>
             <div className='management-section-heading'><strong>Transact</strong></div>
@@ -30,9 +30,10 @@ function Transact() {
             <Mints />
 
             <Payments />
-            
+
             <Extras />
 
+            <Submit />
         </div>
     )
 }

@@ -3,7 +3,7 @@ import { RootState } from "../../../app/store"
 import { useLucid } from "../../../components/LucidProvider"
 import React, { useEffect, useRef, useState } from "react"
 import { shortenAddress } from "../../../util/strings"
-import { UTxO } from "lucid-cardano"
+import { Emulator, UTxO } from "lucid-cardano"
 import { Utxo } from "../wallet/Wallet"
 import { constructObject } from "../../../util/data"
 import { Spend, addSpend, clearAddSpendError, setAddSpendError } from "../../../features/management/transactSlice"
@@ -18,7 +18,7 @@ function UtxoSelector() {
     const files = useSelector((state: RootState) => state.files.files)
     const addSpendError = useSelector((state: RootState) => state.transact.addSpendError)
     const spends = useSelector((state: RootState) => state.transact.spends)
-
+    const numTransactions = useSelector((state: RootState) => state.transact.transactionHistory).length
     const [selectedUtxos, setSelectedUtxos] = useState<UTxO[]>([])
     const [redeemerFileName, setRedeemerFileName] = useState<string>('None')
     const dispatch = useDispatch()
@@ -55,14 +55,21 @@ function UtxoSelector() {
     const usableUtxos = sourceUtxos.filter(sourceUtxo => {
         return !usedUtxos.includes(sourceUtxo.txHash + sourceUtxo.outputIndex)
     })
-
+    
     useEffect(() => {   // utxo fetching for selected address
         if (isLucidLoading) {
             return
         }
-        const lucid = lucidOrNull!!
 
+        const lucid = lucidOrNull!!
         if (utxoSource === 'wallet') {
+            const selectedWallet = wallets.find(wallet => wallet.address === sourceAddress)
+
+            if (!selectedWallet) {
+                return // error?
+            }
+
+            lucid.selectWalletFromSeed(selectedWallet.seed)
             lucid.wallet.getUtxos()
                 .then((utxos) => {
                     setSourceUtxos(utxos)
@@ -81,7 +88,7 @@ function UtxoSelector() {
                 .then(setSourceUtxos)
                 .catch(console.error)
         }
-    }, [isLucidLoading, utxoSource, sourceAddress])
+    }, [isLucidLoading, utxoSource, sourceAddress, numTransactions])
 
     const lucid = lucidOrNull!!
 
@@ -108,9 +115,7 @@ function UtxoSelector() {
                 if (!chosenWallet) {
                     return
                 }
-
-                // this is 100% gonna change when we have preview/mainnet support
-                lucid.selectWalletFromSeed(chosenWallet.seed)
+                setSourceAddress(e.target.value)
             }}
         >
             {

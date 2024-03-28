@@ -11,6 +11,11 @@
     display: flex;
     flex-direction: column;
     align-items: start;
+    width: 100%;
+    margin-top: 25px;
+    background-color: rgb(10, 15, 16);
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
 }
 
 .wallet-utxos-address {
@@ -47,21 +52,26 @@
     min-width: 325px;
     
     margin-left: 30px;
+    margin-bottom: 15px;
 }
 
 .asset-container {
     display: flex;
     flex-direction: row;
     margin-left: 15px;
-    justify-content: space-between;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .asset-label {
     margin-right: 5px;
+    font-weight: bold;
+    font-size: 13px;
 }
 
 .asset-value {
     margin-right: 15px;
+    font-size: 12px;
 }
 
 /* .asset-container:nth-child ... ? */
@@ -78,4 +88,18 @@
 
 .asset-container-container {
     width: 100%;
+}
+
+.wallet-utxos-pkh {
+    display:flex;
+    flex-direction: column;
+    align-items: start;
+    margin-left: 15px;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+.add-wallet-button {
+    margin-left: 15px;
+    align-self: flex-end;
 }

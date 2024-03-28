@@ -100,6 +100,17 @@ const initialState: FileState = {
       ]
     }, null, 2),
     type: 'json'
+  }, {
+    name: 'redeemer.json',
+    content: JSON.stringify({
+      "constructor": 0,
+      "fields": [
+        {
+          "bytes": "7468697369736D79736563726574"
+        }
+      ]
+    }, null, 2),
+    type: 'json'
   }],
   currentFileFocusedInEditorIndex: 0,
   openFileIndices: [0],

@@ -35,7 +35,7 @@ export const LucidProvider = ({ children }: { children: React.ReactNode }) => {
                 return 
             }
             
-            const lucidInstance = await Lucid.new(undefined, network)
+            let lucidInstance = await Lucid.new(undefined, network)
             
             let genesisSeed: string | undefined = undefined
             let genesisWalletAddress = ''
@@ -59,12 +59,13 @@ export const LucidProvider = ({ children }: { children: React.ReactNode }) => {
                     dispatch(addWallet(genesisWallet))
                     setGenesisWallet(genesisWallet)
 
-                    lucidInstance.provider = new Emulator([{
+                    const emulator = new Emulator([{
                         address: genesisWallet?.address || '',
                         assets: {
                             lovelace: 20000000000n
                         }
                     }])
+                    lucidInstance = await Lucid.new(emulator, network)
 
                     setLucid(lucidInstance)
                     setIsLucidLoading(false)

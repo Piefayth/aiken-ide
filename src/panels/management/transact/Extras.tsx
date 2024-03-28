@@ -79,7 +79,7 @@ function Extras() {
                         onChange={(e) => {
                             dispatch(setValidityInterval({
                                 ...validityInterval,
-                                from: e.target.value
+                                to: e.target.value
                             }))
                         }}
                     />

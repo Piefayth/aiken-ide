@@ -17,8 +17,8 @@ export type Spend = {
 
 export type Mint = {
     policyId: string,
-    assetName: string,
-    amount: number // string? technically should be a bigint, but thats illegal in redux
+    assets: SerializableAssets
+    redeemerFileName: string
 }
 
 export type Payment = {
@@ -27,14 +27,18 @@ export type Payment = {
     assets: SerializableAssets
 }
 
-interface TransactState {
+export type TransactState = {
     addSpendError: string | undefined
+} & Transaction
+
+export type Transaction = {
     spends: Spend[]
     mints: Mint[]
     payments: Payment[]
     extraSigners: string[]
     validity: ValidityInterval
     metadataFilename: string
+    transactionHistory: Transaction[]
 }
 
 const initialState: TransactState = {
@@ -47,7 +51,8 @@ const initialState: TransactState = {
         from: '',
         to: ''
     },
-    metadataFilename: 'None'
+    metadataFilename: 'None',
+    transactionHistory: []
 }
 
 
@@ -86,6 +91,16 @@ const transactSlice = createSlice({
         setAddSpendError(state, action: PayloadAction<string>) {
             state.addSpendError = action.payload
         },
+        onTransactionSubmission(state, action: PayloadAction<Transaction>) {
+            state.transactionHistory.push(action.payload)
+            state.mints = []
+            state.spends = []
+            state.payments = []
+            state.extraSigners = []
+            state.validity.from = ''
+            state.validity.to = ''
+            state.metadataFilename = 'None'
+        },
         clearAddSpendError(state) {
             state.addSpendError = undefined
         },
@@ -103,6 +118,7 @@ export const {
     removePayment,
     setExtraSigners,
     setValidityInterval,
-    setMetadata
+    setMetadata,
+    onTransactionSubmission
 } = transactSlice.actions
 export default transactSlice.reducer
