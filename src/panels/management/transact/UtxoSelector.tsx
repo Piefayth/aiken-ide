@@ -167,7 +167,7 @@ function UtxoSelector() {
                     >
                         <option value='wallet'>Wallet</option>
                         <option value='contract'>Contract</option>
-                        <option value='custom'>Custom</option>
+                        {/* <option value='custom'>Custom</option> */}
                     </select>
                 </div>
 

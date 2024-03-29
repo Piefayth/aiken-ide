@@ -31,6 +31,8 @@ export type TransactState = {
     addSpendError: string | undefined
 } & Transaction
 
+export type TransactionSubmissionState = "idle" | "building" | "submitting" | "submitted" | "completed" | "failed"
+
 export type Transaction = {
     spends: Spend[]
     mints: Mint[]
@@ -39,6 +41,8 @@ export type Transaction = {
     validity: ValidityInterval
     metadataFilename: string
     transactionHistory: Transaction[]
+    transactionSubmissionState: TransactionSubmissionState
+    transactionSubmissionError: string | null
 }
 
 const initialState: TransactState = {
@@ -52,7 +56,9 @@ const initialState: TransactState = {
         to: ''
     },
     metadataFilename: 'None',
-    transactionHistory: []
+    transactionHistory: [],
+    transactionSubmissionState: 'idle',
+    transactionSubmissionError: null,
 }
 
 
@@ -91,7 +97,7 @@ const transactSlice = createSlice({
         setAddSpendError(state, action: PayloadAction<string>) {
             state.addSpendError = action.payload
         },
-        onTransactionSubmission(state, action: PayloadAction<Transaction>) {
+        onSuccessfulTransaction(state, action: PayloadAction<Transaction>) {
             state.transactionHistory.push(action.payload)
             state.mints = []
             state.spends = []
@@ -100,6 +106,15 @@ const transactSlice = createSlice({
             state.validity.from = ''
             state.validity.to = ''
             state.metadataFilename = 'None'
+            state.transactionSubmissionState = 'completed'
+            state.transactionSubmissionError = null
+        },
+        setTransactionSubmissionState(state, action: PayloadAction<TransactionSubmissionState>) {
+            state.transactionSubmissionState = action.payload
+        },
+        setTransactionSubmissionError(state, action: PayloadAction<string>) {
+            state.transactionSubmissionError = action.payload
+            state.transactionSubmissionState = 'failed'
         },
         clearAddSpendError(state) {
             state.addSpendError = undefined
@@ -119,6 +134,8 @@ export const {
     setExtraSigners,
     setValidityInterval,
     setMetadata,
-    onTransactionSubmission
+    onSuccessfulTransaction,
+    setTransactionSubmissionState,
+    setTransactionSubmissionError
 } = transactSlice.actions
 export default transactSlice.reducer

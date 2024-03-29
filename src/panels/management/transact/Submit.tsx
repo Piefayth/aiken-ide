@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../../app/store"
-import { Mint, Payment, Spend, TransactState, onTransactionSubmission } from "../../../features/management/transactSlice"
+import { Mint, Payment, Spend, TransactState, onSuccessfulTransaction, setTransactionSubmissionError, setTransactionSubmissionState } from "../../../features/management/transactSlice"
 import { File } from '../../../features/files/filesSlice'
 import { SerializableAssets, deserializeAssets, deserializeUtxos, serializeAssets } from "../../../util/utxo"
-import { Data, Emulator, Lucid } from "lucid-cardano"
+import { Data, Emulator, Lucid, TxSigned } from "lucid-cardano"
 import { useLucid } from "../../../components/LucidProvider"
 import { Contract, Wallet } from "../../../features/management/managementSlice"
 import { constructObject } from "../../../util/data"
@@ -48,10 +48,39 @@ function Submit() {
     }
 
     const wasThereAnyFeedback = feedbackComponents.length > 0
-    if (!wasThereAnyFeedback) {
+    if (!wasThereAnyFeedback && ['building', 'failed', 'idle', 'completed'].includes(transactState.transactionSubmissionState)) {
         feedbackComponents.push(
             <div key='readyToSubmit'>
                 ✔️ Ready to submit.
+            </div>
+        )
+    }
+    
+    if (transactState.transactionSubmissionState === 'submitting') {
+        feedbackComponents.push(
+            <div key='submitting'>
+                🔧 Building transaction... 
+            </div>
+        )
+    } else if (transactState.transactionSubmissionState === 'submitted') {
+        feedbackComponents.push(
+            <div key='submitted'>
+                ⟳ Awaiting confirmation...
+            </div>
+        )
+    } else if (transactState.transactionSubmissionState === 'completed') {
+        feedbackComponents.push(
+            <div key='completed'>
+                ✔️ Last transaction was successful!
+            </div>
+        )
+    } else if (transactState.transactionSubmissionState === 'failed') {
+        feedbackComponents.push(
+            <div key='failed'>
+                ❌ Transaction failed!
+                <p>
+                    { transactState.transactionSubmissionError }
+                </p>
             </div>
         )
     }
@@ -69,22 +98,25 @@ function Submit() {
                     disabled={wasThereAnyFeedback}
                     className={`button submit-transaction-button ${wasThereAnyFeedback ? 'disabled' : ''}`}
                     onClick={() => {
-                        submit(lucid, transactState, files, contracts, wallets)
-                            .then((txhash) => {
+                        dispatch(setTransactionSubmissionState('building'))
+                        buildTransaction(lucid, transactState, files, contracts, wallets)
+                            .then((signedTransaction) => {
+                                dispatch(setTransactionSubmissionState('submitting'))
+                                return signedTransaction.submit()
+                            })
+                            .then((txHash) => {
+                                dispatch(setTransactionSubmissionState('submitted'))
                                 if (lucid.network === 'Custom') {
-                                    (lucid.provider as Emulator).awaitTx(txhash)
+                                    (lucid.provider as Emulator).awaitTx(txHash)
                                 } else {
                                     return Promise.resolve()
                                 }
                             })
                             .then(() => {
-                                dispatch(onTransactionSubmission(transactState))
-                                console.log("tx success")
+                                dispatch(onSuccessfulTransaction(transactState))
                             })
                             .catch((e) => {
-                                // handle error
-                                console.log(e)
-                                console.log("tx failure")
+                                dispatch(setTransactionSubmissionError(e.message))
                             })
                     }}
                 >Submit Transaction</button>
@@ -95,7 +127,7 @@ function Submit() {
 }
 
 // TODO: all the sad paths in here need to become user facing errors
-async function submit(lucid: Lucid, transactState: TransactState, files: File[], contracts: Contract[], wallets: Wallet[]) {
+async function buildTransaction(lucid: Lucid, transactState: TransactState, files: File[], contracts: Contract[], wallets: Wallet[]): Promise<TxSigned> {
     const { mints, spends, payments, extraSigners, validity, metadataFilename } = transactState
 
     const tx = lucid.newTx()
@@ -105,16 +137,14 @@ async function submit(lucid: Lucid, transactState: TransactState, files: File[],
         const doesSpendHaveRedeemer = spend.redeemerFileName && spend.redeemerFileName !== 'None'
 
         if (doesSpendHaveRedeemer && !redeemerFile) {
-            console.error(`Could not find ${spend.redeemerFileName} to build redeemer`)
-            throw Error("todo real error")
+            throw Error(`Could not find ${spend.redeemerFileName} to build redeemer`)
         }
 
         if (spend.source === 'contract') {
             const spendFromAddress = spend.utxos[0].address
             const contract = contracts.find(contract => contract.address === spendFromAddress)
             if (!contract) {
-                console.error(`Could not find script address ${spendFromAddress} in contracts.`)
-                throw Error("todo real error")
+                throw Error(`Could not find script address ${spendFromAddress} in contracts.`)
             }
 
             tx.attachSpendingValidator(contract.script)
@@ -125,9 +155,12 @@ async function submit(lucid: Lucid, transactState: TransactState, files: File[],
             try {
                 const redeemerJson = JSON.parse(redeemerFile.content)
                 redeemer = constructObject(redeemerJson)
-            } catch (e) {
-                console.error(e)
-                throw Error("todo real error")
+            } catch (e: any) {
+                if (e.message && e.message.includes('JSON.parse')) {
+                    throw Error(`Invalid JSON in ${redeemerFile.name}`)
+                } else {
+                    throw Error(`JSON in ${redeemerFile.name} cannot be converted to Data`)
+                }
             }
         }
 
@@ -143,14 +176,12 @@ async function submit(lucid: Lucid, transactState: TransactState, files: File[],
         const doesMintHaveRedeemer = mint.redeemerFileName && mint.redeemerFileName !== 'None'
 
         if (doesMintHaveRedeemer && !redeemerFile) {
-            console.error(`Could not find ${mint.redeemerFileName} to build redeemer`)
-            throw Error("todo real error")
+            throw Error(`Could not find ${mint.redeemerFileName} to build redeemer`)
         }
 
         const contract = contracts.find(contract => contract.scriptHash === mint.policyId)
         if (!contract) {
-            console.error(`Could not find script address ${mint.policyId} in contracts`)
-            throw Error("todo real error")
+            throw Error(`Could not find script address ${mint.policyId} in contracts`)
         }
 
         tx.attachMintingPolicy(contract.script)
@@ -162,9 +193,12 @@ async function submit(lucid: Lucid, transactState: TransactState, files: File[],
                 redeemer = constructObject(redeemerJson)
                 
                 console.log(redeemer)
-            } catch (e) {
-                console.error(e)
-                throw Error("todo real error")
+            } catch (e: any) {
+                if (e.message && e.message.includes('JSON.parse')) {
+                    throw Error(`Invalid JSON in ${redeemerFile.name}`)
+                } else {
+                    throw Error(`JSON in ${redeemerFile.name} cannot be converted to Data`)
+                }
             }
         }
 
@@ -180,8 +214,7 @@ async function submit(lucid: Lucid, transactState: TransactState, files: File[],
         const doesPaymentHaveDatum = payment.datumFileName && payment.datumFileName !== 'None'
 
         if (doesPaymentHaveDatum && !datumFile) {
-            console.error(`Could not find ${payment.datumFileName} to build datum`)
-            throw Error("todo real error")
+            throw Error(`Could not find ${payment.datumFileName} to build datum`)
         }
 
         let datum
@@ -189,9 +222,12 @@ async function submit(lucid: Lucid, transactState: TransactState, files: File[],
             try {
                 const datumJson = JSON.parse(datumFile.content)
                 datum = constructObject(datumJson)
-            } catch(e) {
-                console.error(e)
-                throw Error("todo real error")
+            } catch(e: any) {
+                if (e.message && e.message.includes('JSON.parse')) {
+                    throw Error(`Invalid JSON in ${datumFile.name}`)
+                } else {
+                    throw Error(`JSON in ${datumFile.name} cannot be converted to Data`)
+                }
             }
         }
 
@@ -219,16 +255,14 @@ async function submit(lucid: Lucid, transactState: TransactState, files: File[],
         const metadataFile = files.find(file => file.name === metadataFilename)
         
         if (!metadataFile) {
-            console.error(`Could not find metadata file ${metadataFilename}`)
-            throw Error("todo real error")
+            throw Error(`Could not find metadata file ${metadataFilename}`)
         }
 
         let metadata
         try {
             metadata = JSON.parse(metadataFile.content)
         } catch (e) {
-            console.error(e)
-            throw Error("todo real error")
+            throw Error(`Invalid JSON in metadata file ${metadata}`)
         }
 
         for (const maybeLabel of Object.keys(metadata)) {
@@ -236,8 +270,7 @@ async function submit(lucid: Lucid, transactState: TransactState, files: File[],
                 const labelNumber = parseInt(maybeLabel)
                 tx.attachMetadata(labelNumber, metadata[maybeLabel])
             } catch (e) {
-                console.error(`Expected numeric label key in metadata, instead received key ${maybeLabel}`)
-                throw Error("todo real error")
+                throw Error(`Expected numeric label key in metadata, instead received key ${maybeLabel}`)
             }
         }
     }
@@ -250,14 +283,13 @@ async function submit(lucid: Lucid, transactState: TransactState, files: File[],
 
     for (const signerAddress of extraSigners) {
         if (walletSpendAddresses.includes(signerAddress)) {
-            continue
+            continue // wallet will sign this in the next loop
         }
 
         const signerWallet = wallets.find(wallet => wallet.address === signerAddress)
 
         if (!signerWallet) {
-            console.error(`Could not find wallet for address ${signerAddress}`)
-            throw Error("todo real error")
+            throw Error(`Could not find wallet for address ${signerAddress}`)
         }
 
         lucid.selectWalletFromSeed(signerWallet.seed)
@@ -268,8 +300,7 @@ async function submit(lucid: Lucid, transactState: TransactState, files: File[],
         const spendingWallet = wallets.find(wallet => wallet.address === walletSpendAddress)
 
         if (!spendingWallet) {
-            console.error(`Could not find wallet for adress ${walletSpendAddress}`)
-            throw Error("todo real error")
+            throw Error(`Could not find wallet for adress ${walletSpendAddress}`)
         }
         
         lucid.selectWalletFromSeed(spendingWallet.seed)
@@ -278,11 +309,7 @@ async function submit(lucid: Lucid, transactState: TransactState, files: File[],
     
     const signedTx = await unsignedTx.complete()
 
-    const submitted = signedTx.submit()
-
-    await submitted 
-
-    return signedTx.toHash()
+    return signedTx
 }
 
 function canAffordTotal(mints: Mint[], spends: Spend[], payments: Payment[]) {
