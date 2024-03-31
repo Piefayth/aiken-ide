@@ -16,6 +16,7 @@ import { FileManager } from './panels/editor/FileManager'
 import Tooltip from './components/Tooltip'
 import { ContextMenu } from './components/ContextMenu'
 import { ManagementTabs } from './panels/management/ManagementTabs'
+import { Settings } from './panels/settings/Settings'
 
 function App() {
   const aiken = useAiken()
@@ -28,6 +29,7 @@ function App() {
   return (() => {
       return (
         <MonacoContext.Provider value={monaco}>
+          <Settings />
           <Tooltip />
           <ContextMenu />
           <div className={`main-layout-container ${loadingVisibilityClass}`}>

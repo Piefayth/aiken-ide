@@ -46,10 +46,15 @@ const managementSlice = createSlice({
             state.selectedTabIndex = action.payload
         },
         addWallet(state, action: PayloadAction<Wallet>) {
-            state.wallets.push(action.payload)
+            if (!state.wallets.find(wallet => wallet.address === action.payload.address)) {
+                state.wallets.push(action.payload)
+            }
         },
         removeWallet(state, action: PayloadAction<string>) {
             state.wallets.filter(wallet => wallet.address === action.payload)
+        },
+        clearWallets(state) {
+            state.wallets = []
         },
         addContract(state, action: PayloadAction<ContractInput>) {
             let version = 0
@@ -89,6 +94,7 @@ export const {
     selectTab,
     addWallet,
     removeWallet,
+    clearWallets,
     addContract,
     removeContract,
     clearAddContractError,

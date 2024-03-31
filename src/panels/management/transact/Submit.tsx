@@ -191,8 +191,6 @@ async function buildTransaction(lucid: Lucid, transactState: TransactState, file
             try {
                 const redeemerJson = JSON.parse(redeemerFile.content)
                 redeemer = constructObject(redeemerJson)
-                
-                console.log(redeemer)
             } catch (e: any) {
                 if (e.message && e.message.includes('JSON.parse')) {
                     throw Error(`Invalid JSON in ${redeemerFile.name}`)

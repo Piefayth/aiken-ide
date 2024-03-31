@@ -38,4 +38,8 @@ function shortenAddress(address: string, startLength: number = 12, endLength: nu
     return address
 }
 
-export { findLineNumberByCharIndex, splitFilename, shortenAddress}
+function capitalize(s: string): string {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+export { findLineNumberByCharIndex, splitFilename, shortenAddress, capitalize}

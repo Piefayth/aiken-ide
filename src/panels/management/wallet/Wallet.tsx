@@ -3,10 +3,10 @@ import { Wallet } from "../../../features/management/managementSlice"
 import { shortenAddress } from "../../../util/strings"
 import { Lucid, UTxO, toText } from "lucid-cardano"
 import Copy from "../../../components/Copy"
+import { useLucid } from "../../../components/LucidProvider"
 
 type WalletUtxosProps = {
     wallet: Wallet
-    lucid: Lucid
 }
 
 type UtxoProps = {
@@ -37,21 +37,26 @@ function Utxo({ utxo, className, withCopy = true }: UtxoProps) {
     )
 }
 
-function WalletComponent({ wallet, lucid }: WalletUtxosProps) {
+function WalletComponent({ wallet }: WalletUtxosProps) {
     const [utxos, setUtxos] = useState<UTxO[] | undefined>(undefined)
     const [utxoError, setUtxoError] = useState<string | undefined>(undefined)
+    const { lucid, isLucidLoading } = useLucid()
 
     useEffect(() => {
+        if (!lucid || isLucidLoading) {
+            return
+        }
+
         lucid.provider.getUtxos(wallet.address)
             .then(utxos => {
                 setUtxos(utxos)
             })
             .catch((e: any) => {
-                setUtxoError(e.message) // what type is e actually tho
+                setUtxoError(e.message)
             })
-    }, [wallet, lucid])
+    }, [wallet, lucid, isLucidLoading])
 
-    if (!lucid) {
+    if (!lucid || isLucidLoading) {
         return
     }
 

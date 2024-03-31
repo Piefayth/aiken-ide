@@ -3,12 +3,12 @@ import { RootState } from "../../../app/store"
 import { useLucid } from "../../../components/LucidProvider"
 import React, { useEffect, useRef, useState } from "react"
 import { shortenAddress } from "../../../util/strings"
-import { Emulator, UTxO } from "lucid-cardano"
+import { UTxO } from "lucid-cardano"
 import { Utxo } from "../wallet/Wallet"
 import { constructObject } from "../../../util/data"
 import { Spend, addSpend, clearAddSpendError, setAddSpendError } from "../../../features/management/transactSlice"
 import { useTooltip } from "../../../hooks/useTooltip"
-import { SerializableUTxO, serializeUtxos } from "../../../util/utxo"
+import { serializeUtxos } from "../../../util/utxo"
 
 export type UtxoSource = 'wallet' | 'contract' | 'custom'
 
@@ -34,7 +34,7 @@ function UtxoSelector() {
         } else if (contracts.length > 0) {
             return 'contract' as UtxoSource
         } else {
-            return 'custom' as UtxoSource
+            return 'wallet' as UtxoSource
         }
     })())
 
@@ -55,9 +55,17 @@ function UtxoSelector() {
     const usableUtxos = sourceUtxos.filter(sourceUtxo => {
         return !usedUtxos.includes(sourceUtxo.txHash + sourceUtxo.outputIndex)
     })
-    
-    useEffect(() => {   // utxo fetching for selected address
+
+    if (utxoSource === 'wallet' && wallets.length === 0 && contracts.length > 0) {
+        setUtxoSource('contract')
+    }
+
+    useEffect(() => {
         if (isLucidLoading) {
+            return
+        }
+
+        if (sourceAddress === '') {
             return
         }
 
@@ -66,7 +74,7 @@ function UtxoSelector() {
             const selectedWallet = wallets.find(wallet => wallet.address === sourceAddress)
 
             if (!selectedWallet) {
-                return // error?
+                throw Error(`Expected to be able to find wallet with address ${sourceAddress}`)
             }
 
             lucid.selectWalletFromSeed(selectedWallet.seed)
@@ -75,18 +83,19 @@ function UtxoSelector() {
                     setSourceUtxos(utxos)
                 })
                 .catch(console.error)
-        } else {
-            if (utxoSource === 'custom') {
-                try {
-                    const _addressValidityCheck = lucid.utils.getAddressDetails(sourceAddress)
-                } catch (_) {
-                    return // don't search when the address isn't valid
-                }
+        } else if (utxoSource === 'contract') {
+            const selectedContract = contracts.find(contract => contract.address === sourceAddress)
+
+            if (!selectedContract) {
+                throw Error(`Expected to be able to find contract with address ${sourceAddress}`)
             }
 
-            lucid.provider.getUtxos(sourceAddress)
-                .then(setSourceUtxos)
-                .catch(console.error)
+            if (selectedContract?.address) {
+                lucid.provider.getUtxos(selectedContract?.address)
+                .then((utxos) => {
+                    setSourceUtxos(utxos)
+                })
+            }
         }
     }, [isLucidLoading, utxoSource, sourceAddress, numTransactions])
 
@@ -132,15 +141,6 @@ function UtxoSelector() {
             }
         </select>
     )
-    const addressTextInput = (
-        <input
-            className='address-text-input'
-            type='text'
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setSourceAddress(e.target.value)
-            }}
-        />
-    )
 
     return isLucidLoading ? <div>Loading lol</div> : (
         <div className='utxo-selection-container'>
@@ -149,6 +149,7 @@ function UtxoSelector() {
                     <div className='input-label'>Source</div>
                     <select
                         className='utxo-source-select'
+                        value={utxoSource}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                             setUtxoSource(e.target.value as UtxoSource)
                             setRedeemerFileName('None')
@@ -167,17 +168,12 @@ function UtxoSelector() {
                     >
                         <option value='wallet'>Wallet</option>
                         <option value='contract'>Contract</option>
-                        {/* <option value='custom'>Custom</option> */}
                     </select>
                 </div>
 
                 <div className='utxo-address-selection-container'>
                     <div className='input-label'>Address</div>
-                    {
-                        utxoSource === 'custom' ?
-                            addressTextInput :
-                            addressDropdownInput
-                    }
+                    { addressDropdownInput }
                 </div>
 
                 {

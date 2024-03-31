@@ -6,7 +6,7 @@ import contextMenuReducer from '../features/contextMenu/contextMenuSlice'
 import managementReducer from '../features/management/managementSlice'
 import lucidReducer from '../features/management/lucidSlice'
 import transactReducer from '../features/management/transactSlice'
-
+import settingsReducer from '../features/settings/settingsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -16,7 +16,8 @@ export const store = configureStore({
     contextMenu: contextMenuReducer,
     management: managementReducer,
     lucid: lucidReducer,
-    transact: transactReducer
+    transact: transactReducer,
+    settings: settingsReducer
   },
 })
 
