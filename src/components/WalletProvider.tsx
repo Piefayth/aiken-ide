@@ -28,13 +28,13 @@ export function WalletProvider({ children }: React.PropsWithChildren<{}>) {
         .filter(wallet => wallet.isCurrentlyConnected)
         .map(wallet => wallet.walletVendor)?.[0]
 
-        const onAccountChange = useCallback(() => {
-            setNeedsUpdated(true)
-        }, [setNeedsUpdated])
+    const onAccountChange = useCallback(() => {
+        setNeedsUpdated(true)
+    }, [setNeedsUpdated])
 
-        const walletContext = useMemo(() => {
-            return { walletApi, onAccountChange }
-        }, [walletApi, onAccountChange])
+    const walletContext = useMemo(() => {
+        return { walletApi, onAccountChange }
+    }, [walletApi, onAccountChange])
 
 
     useEffect(() => {
@@ -50,10 +50,12 @@ export function WalletProvider({ children }: React.PropsWithChildren<{}>) {
 
     useEffect(() => {
         const check = async () => {
-            if(!needsUpdated || !lucid || !walletApi ||!connectedWalletVendor) {
-               return
+            if (!needsUpdated || !lucid || !walletApi || !connectedWalletVendor) {
+                return
             }
 
+            setNeedsUpdated(false)
+            
             await window.cardano[connectedWalletVendor].enable()
             lucid.selectWallet(walletApi!!)
 
@@ -69,10 +71,10 @@ export function WalletProvider({ children }: React.PropsWithChildren<{}>) {
                     pkh,
                     seed: null,
                     isCurrentlyConnected: true,
-                    walletVendor: connectedWalletVendor
+                    walletVendor: connectedWalletVendor,
                 }))
             }
-            
+
         }
 
         check()

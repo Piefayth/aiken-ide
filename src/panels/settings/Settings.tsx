@@ -4,7 +4,7 @@ import { ProviderKind, setBlockfrostConfig, setFormNetwork, setFormProviderKind,
 import './Settings.css'
 import { capitalize } from "../../util/strings"
 import { Blockfrost, Lucid, Network } from "lucid-cardano"
-import { clearWallets } from "../../features/management/managementSlice"
+import { clearWallets, updateWalletAndContractAddresses } from "../../features/management/managementSlice"
 import { useState } from "react"
 
 
@@ -13,6 +13,8 @@ function Settings() {
     const [isSaving, setIsSaving] = useState(false)
     const [savingError, setSavingError] = useState('')
     const settings = useSelector((state: RootState) => state.settings)
+    const wallets = useSelector((state: RootState) => state.management.wallets)
+    const contracts = useSelector((state: RootState) => state.management.contracts)
     const dispatch = useDispatch()
 
     const networks: (Network | 'Emulator')[] = ['Emulator', 'Preview', 'Preprod', 'Mainnet']
@@ -153,12 +155,31 @@ function Settings() {
                                                 ), 
                                                 settings.form.network === 'Emulator' ? 'Custom' : settings.form.network
                                             )
-                                            .then(() => {
+                                            .then((lucid: Lucid) => {
                                                 // new settings are good
                                                 if (settings.providerConfig.kind === 'emulator' && settings.form.providerKind !== 'emulator') {
                                                     // reset all wallets when switching between live and emulated networks
-                                                    // what happens when we switch between live networks? can we just regenerate the addresses?
                                                     dispatch(clearWallets())
+                                                }
+
+                                                if (
+                                                    (settings.network === 'Mainnet' && settings.form.network !== 'Mainnet') ||
+                                                    (settings.network !== 'Mainnet' && settings.form.network === 'Mainnet')
+                                                ) {
+                                                    const oldAddressToNewAddressMap: Record<string, string> = {}
+
+                                                    for (const contract of contracts) {
+                                                        oldAddressToNewAddressMap[contract.address] = lucid.utils.validatorToAddress(contract.script)
+                                                    }
+
+                                                    for (const wallet of wallets) {
+                                                        oldAddressToNewAddressMap[wallet.address] = lucid.utils.credentialToAddress(
+                                                            lucid.utils.keyHashToCredential(wallet.pkh),
+                                                            lucid.utils.stakeCredentialOf(wallet.address)
+                                                        )
+                                                    }
+                                                    
+                                                    dispatch(updateWalletAndContractAddresses(oldAddressToNewAddressMap))
                                                 }
                                                 dispatch(saveUpdatedSettings())
                                             })

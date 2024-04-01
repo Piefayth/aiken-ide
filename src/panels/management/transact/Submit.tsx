@@ -49,7 +49,7 @@ function Submit() {
     }
 
     const wasThereAnyFeedback = feedbackComponents.length > 0
-    if (!wasThereAnyFeedback && ['building', 'failed', 'idle', 'completed'].includes(transactState.transactionSubmissionState)) {
+    if (!wasThereAnyFeedback && ['failed', 'idle', 'completed'].includes(transactState.transactionSubmissionState)) {
         feedbackComponents.push(
             <div key='readyToSubmit'>
                 ✔️ Ready to submit.
@@ -57,10 +57,16 @@ function Submit() {
         )
     }
     
-    if (transactState.transactionSubmissionState === 'submitting') {
+    if (transactState.transactionSubmissionState === 'building') {
         feedbackComponents.push(
-            <div key='submitting'>
+            <div key='building'>
                 🔧 Building transaction... 
+            </div>
+        )
+    } if (transactState.transactionSubmissionState === 'submitting') {
+        feedbackComponents.push(
+            <div key='building'>
+                ⟳ Submitting transaction... 
             </div>
         )
     } else if (transactState.transactionSubmissionState === 'submitted') {
@@ -127,7 +133,6 @@ function Submit() {
     )
 }
 
-// TODO: all the sad paths in here need to become user facing errors
 async function buildTransaction(lucid: Lucid, transactState: TransactState, files: File[], contracts: Contract[], wallets: Wallet[], currentWalletApi: WalletApi | null): Promise<TxSigned> {
     const { mints, spends, payments, extraSigners, validity, metadataFilename } = transactState
 

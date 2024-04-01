@@ -3,9 +3,10 @@ import { RootState } from "../../../app/store"
 import { useLucid } from "../../../components/LucidProvider"
 import './Wallet.css'
 import { WalletComponent } from "./Wallet"
-import { addWallet } from "../../../features/management/managementSlice"
+import { addWallet, setConnectedWallet } from "../../../features/management/managementSlice"
 import { WalletApi, generateSeedPhrase } from "lucid-cardano"
 import { useState } from "react"
+import { useWallet } from "../../../components/WalletProvider"
 
 const WALLET_CHOICES = ["eternl", "nami", "flint", "typhon", "yoroi", "lace", "vespr"]
 
@@ -19,7 +20,10 @@ function Wallets() {
     const wallets = useSelector((state: RootState) => state.management.wallets)
     const [pickedWalletName, setPickedWalletName] = useState('')
     const [isEnablingWallet, setIsEnablingWallet] = useState(false)
+    const [refreshWallets, setRefreshWallets] = useState(false)
     const dispatch = useDispatch()
+
+    const connectedWallet = wallets.find(wallet => wallet.isCurrentlyConnected)
 
     if (!pickedWalletName && userWalletOptions.length > 0) {
         setPickedWalletName(userWalletOptions[0])
@@ -43,7 +47,7 @@ function Wallets() {
                             address,
                             pkh,
                             isCurrentlyConnected: false,
-                            walletVendor: null
+                            walletVendor: null,
                         }))
                     })
             }}
@@ -61,8 +65,6 @@ function Wallets() {
 
                 const wallet = window.cardano[pickedWalletName]
                 if (!wallet) {
-                    console.log(pickedWalletName)
-                    console.log(window.cardano)
                     console.error('Selected wallet not available in environment')
                     return
                 }
@@ -71,7 +73,7 @@ function Wallets() {
                     console.error('Wallet connect attempt before loading finished')
                     return
                 }
-
+                
                 setIsEnablingWallet(true)
 
                 const lucid = lucidOrUndefined!!
@@ -88,7 +90,7 @@ function Wallets() {
                             walletVendor: pickedWalletName,
                             address,
                             pkh,
-                            isCurrentlyConnected: true
+                            isCurrentlyConnected: true,
                         }))
                     })
                     .finally(() => {
@@ -97,6 +99,17 @@ function Wallets() {
             }}
         >
             Connect Wallet
+        </button>
+    )
+
+    const disconnectWalletButton = (
+        <button
+            className='button'
+            onClick={() => {
+                dispatch(setConnectedWallet(''))
+            }}
+        >
+            Disconnect Wallet
         </button>
     )
 
@@ -130,12 +143,17 @@ function Wallets() {
                 {
                     providerKind === 'emulator' ?
                         null :
-                        selectWalletDropdown
+                        connectedWallet ?  null : selectWalletDropdown
                 }
                 {
                     providerKind === 'emulator' ?
                         generateWalletButton :
-                        connectWalletButton
+                        connectedWallet ?  null : connectWalletButton
+                }
+                {
+                    connectedWallet ?
+                        disconnectWalletButton :
+                        null
                 }
             </div>
             {

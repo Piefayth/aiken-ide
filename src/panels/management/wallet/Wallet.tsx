@@ -42,8 +42,6 @@ function Utxo({ utxo, className, withCopy = true }: UtxoProps) {
 
 function WalletComponent({ wallet }: WalletUtxosProps) {
     const { walletApi, onAccountChange} = useWallet()
-    const dispatch = useDispatch()
-    const wallets = useSelector((state: RootState) => state.management.wallets)
     const [utxos, setUtxos] = useState<UTxO[] | undefined>(undefined)
     const [utxoError, setUtxoError] = useState<string | undefined>(undefined)
     const { lucid, isLucidLoading } = useLucid()
@@ -81,7 +79,7 @@ function WalletComponent({ wallet }: WalletUtxosProps) {
         }
     
         fetchUtxos()
-    }, [wallet, lucid, isLucidLoading, walletApi])
+    }, [wallet.isCurrentlyConnected, lucid, isLucidLoading, walletApi])
 
     if (!lucid || isLucidLoading) {
         return
@@ -98,7 +96,7 @@ function WalletComponent({ wallet }: WalletUtxosProps) {
             <div
                 className='wallet-utxos-address'
             >
-                {shortAddress} <Copy value={wallet.address} />
+                {shortAddress} <Copy value={wallet.address} /> { wallet.isCurrentlyConnected ? <span title='Connected'>⚡</span> : null }
             </div>
             <div
                 className='wallet-utxos-pkh'

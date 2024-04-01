@@ -23,6 +23,8 @@ export interface DeleteContractInput {
     version: number
 }
 
+export type AddressUpdate = Record<string, string> // <oldAddress, newAddress>
+
 export type Contract = {
     version: number,
 } & ContractInput
@@ -41,11 +43,6 @@ const initialState: ManagementState = {
     addContractError: undefined,
 }
 
-type AccountChangeParams = {
-    lucid: Lucid,
-    wallet: WalletApi
-}
-
 const managementSlice = createSlice({
     name: 'management',
     initialState,
@@ -54,13 +51,17 @@ const managementSlice = createSlice({
             state.selectedTabIndex = action.payload
         },
         addWallet(state, action: PayloadAction<Wallet>) {
-            if (!state.wallets.find(wallet => wallet.pkh === action.payload.pkh)) {
-                if (action.payload.isCurrentlyConnected) {
-                    for (let i = 0; i < state.wallets.length; i++) {
+            if (action.payload.isCurrentlyConnected) {
+                for (let i = 0; i < state.wallets.length; i++) {
+                    if (state.wallets[i].pkh === action.payload.pkh) {
+                        state.wallets[i].isCurrentlyConnected = true
+                    } else {
                         state.wallets[i].isCurrentlyConnected = false
                     }
                 }
+            }
 
+            if (!state.wallets.find(wallet => wallet.pkh === action.payload.pkh)) {
                 state.wallets.push(action.payload)
             }
         },
@@ -72,12 +73,27 @@ const managementSlice = createSlice({
                 if (state.wallets[i].pkh === action.payload) {
                     state.wallets[i].isCurrentlyConnected = true
                 } else {
-                    console.error(`Could not connect to wallet with pkh ${action.payload}`)
+                    state.wallets[i].isCurrentlyConnected = false
                 }
             }
         },
         clearWallets(state) {
             state.wallets = []
+        },
+        updateWalletAndContractAddresses(state, action: PayloadAction<AddressUpdate>) {
+            state.contracts = state.contracts.map(contract => {
+                return {
+                    ...contract,
+                    address: action.payload[contract.address]
+                }
+            })
+
+            state.wallets = state.wallets.map(wallet => {
+                return {
+                    ...wallet,
+                    address: action.payload[wallet.address]
+                }
+            })
         },
         addContract(state, action: PayloadAction<ContractInput>) {
             let version = 0
@@ -123,5 +139,6 @@ export const {
     removeContract,
     clearAddContractError,
     setAddContractError,
+    updateWalletAndContractAddresses
 } = managementSlice.actions
 export default managementSlice.reducer

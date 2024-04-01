@@ -81,7 +81,7 @@ export const LucidProvider = ({ children }: { children: React.ReactNode }) => {
                         seed: genesisSeed,
                         pkh: instance.utils.getAddressDetails(genesisAddress).paymentCredential?.hash!!,
                         walletVendor: null,
-                        isCurrentlyConnected: false
+                        isCurrentlyConnected: false,
                     }))
                 }
                 setLucid(instance!!)
@@ -89,7 +89,6 @@ export const LucidProvider = ({ children }: { children: React.ReactNode }) => {
             })
             .catch(err => {
                 setIsLucidLoading(false)
-                console.log('Unexpected problem with lucid...')
                 console.error(err)
             })
         return

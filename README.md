@@ -23,4 +23,6 @@ todo:
 
 - ref inputs
 
+- contracts with stake addresses
+
 - an unimaginably long list of other stuff

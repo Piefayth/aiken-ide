@@ -42,7 +42,7 @@ function UtxoSelector() {
 
     const [sourceAddress, setSourceAddress] = useState<string>((() => {
         if (utxoSource === 'wallet' && wallets.length) {
-            return wallets[0].address
+            return wallets.find(wallet => wallet.isCurrentlyConnected)?.address || wallets[0].address
         } else if (utxoSource === 'contract' && contracts.length) {
             return contracts[0].address
         } else {
@@ -61,6 +61,8 @@ function UtxoSelector() {
     if (utxoSource === 'wallet' && wallets.length === 0 && contracts.length > 0) {
         setUtxoSource('contract')
     }
+
+    const connectedWalletPkh = wallets.find(wallet => wallet.isCurrentlyConnected)?.pkh
 
     useEffect(() => {
         if (isLucidLoading) {
@@ -121,7 +123,7 @@ function UtxoSelector() {
                 })
             }
         }
-    }, [isLucidLoading, utxoSource, sourceAddress, numTransactions])
+    }, [isLucidLoading, utxoSource, sourceAddress, numTransactions, connectedWalletPkh])
 
     const lucid = lucidOrNull!!
 
@@ -143,6 +145,7 @@ function UtxoSelector() {
     const addressDropdownInput = (
         <select
             className='utxo-source-select'
+            value={sourceAddress}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                 const chosenWallet = wallets.find(wallet => wallet.address === e.target.value)
                 if (!chosenWallet) {
