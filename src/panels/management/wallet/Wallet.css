@@ -99,7 +99,8 @@
     margin-bottom: 20px;
 }
 
-.add-wallet-button {
-    margin-left: 15px;
+.wallet-buttons {
     align-self: flex-end;
+    display: flex;
+    gap: 15px;
 }

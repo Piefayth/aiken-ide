@@ -145,11 +145,19 @@ function Settings() {
                                     setSavingError('')
                                     if (settings.form.providerKind === 'blockfrost') {
                                         setIsSaving(true)
-                                        Lucid.new(new Blockfrost(settings.form.blockfrost.url, settings.form.blockfrost.apiKey))
+                                        // we create a throwaway lucid to verify that the settings provided actually work before saving them
+                                        Lucid.new(
+                                                new Blockfrost(
+                                                    settings.form.blockfrost.url, 
+                                                    settings.form.blockfrost.apiKey
+                                                ), 
+                                                settings.form.network === 'Emulator' ? 'Custom' : settings.form.network
+                                            )
                                             .then(() => {
                                                 // new settings are good
                                                 if (settings.providerConfig.kind === 'emulator' && settings.form.providerKind !== 'emulator') {
                                                     // reset all wallets when switching between live and emulated networks
+                                                    // what happens when we switch between live networks? can we just regenerate the addresses?
                                                     dispatch(clearWallets())
                                                 }
                                                 dispatch(saveUpdatedSettings())

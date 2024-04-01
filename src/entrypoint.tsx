@@ -5,13 +5,16 @@ import App from './App.tsx'
 import './index.css'
 import { store } from './app/store'
 import { LucidProvider } from './components/LucidProvider.tsx'
+import { WalletProvider } from './components/WalletProvider.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-      <Provider store={store}>
-        <LucidProvider>
+    <Provider store={store}>
+      <LucidProvider>
+        <WalletProvider>
           <App />
-        </LucidProvider>
-      </Provider>
+        </WalletProvider>
+      </LucidProvider>
+    </Provider>
   </React.StrictMode>,
 )

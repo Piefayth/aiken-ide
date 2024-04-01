@@ -3,12 +3,13 @@ import { RootState } from "../../../app/store"
 import { useLucid } from "../../../components/LucidProvider"
 import React, { useEffect, useRef, useState } from "react"
 import { shortenAddress } from "../../../util/strings"
-import { UTxO } from "lucid-cardano"
+import { UTxO, WalletApi } from "lucid-cardano"
 import { Utxo } from "../wallet/Wallet"
 import { constructObject } from "../../../util/data"
 import { Spend, addSpend, clearAddSpendError, setAddSpendError } from "../../../features/management/transactSlice"
 import { useTooltip } from "../../../hooks/useTooltip"
 import { serializeUtxos } from "../../../util/utxo"
+import { useWallet } from "../../../components/WalletProvider"
 
 export type UtxoSource = 'wallet' | 'contract' | 'custom'
 
@@ -21,6 +22,7 @@ function UtxoSelector() {
     const numTransactions = useSelector((state: RootState) => state.transact.transactionHistory).length
     const [selectedUtxos, setSelectedUtxos] = useState<UTxO[]>([])
     const [redeemerFileName, setRedeemerFileName] = useState<string>('None')
+    const { walletApi, onAccountChange } = useWallet()
     const dispatch = useDispatch()
     const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -77,12 +79,34 @@ function UtxoSelector() {
                 throw Error(`Expected to be able to find wallet with address ${sourceAddress}`)
             }
 
-            lucid.selectWalletFromSeed(selectedWallet.seed)
-            lucid.wallet.getUtxos()
+            if (selectedWallet.seed) {
+                lucid.selectWalletFromSeed(selectedWallet.seed)
+                lucid.wallet.getUtxos()
+                    .then((utxos) => {
+                        setSourceUtxos(utxos)
+                    })
+                    .catch(console.error)
+            } else if (selectedWallet.isCurrentlyConnected && walletApi !== null) {
+                lucid.selectWallet(walletApi)
+                lucid.wallet.getUtxos()
                 .then((utxos) => {
                     setSourceUtxos(utxos)
                 })
-                .catch(console.error)
+                .catch((e) => {
+                    if ((e.message as string).includes('account changed')) {
+                        onAccountChange()
+                    } else {
+                        console.error(e.message)
+                    }
+                })
+            } else {
+                lucid.provider.getUtxos(selectedWallet.address)
+                    .then((utxos) => {
+                        setSourceUtxos(utxos)
+                    })
+                    .catch(console.error)
+            }
+
         } else if (utxoSource === 'contract') {
             const selectedContract = contracts.find(contract => contract.address === sourceAddress)
 
@@ -156,9 +180,7 @@ function UtxoSelector() {
                             setSourceUtxos([])
 
                             if (e.target.value === 'wallet' && wallets.length > 0) {
-                                const chosenWallet = wallets[0]
-                                lucid.selectWalletFromSeed(chosenWallet.seed)
-                                setSourceAddress(chosenWallet.address)
+                                setSourceAddress(wallets[0].address)
                             } else if (e.target.value === 'contract' && contracts.length > 0) {
                                 setSourceAddress(contracts[0].address)
                             } else {

@@ -1,10 +1,13 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Network, Script } from 'lucid-cardano'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { Lucid, Network, Script, WalletApi } from 'lucid-cardano'
 export const TAB_NAMES = ['Build', 'Contracts', 'Wallets', 'Transact']
 
 export interface Wallet {
     address: string,
-    seed: string
+    pkh: string,
+    seed: string | null,
+    isCurrentlyConnected: boolean
+    walletVendor: string | null
 }
 
 export interface ContractInput {
@@ -38,6 +41,11 @@ const initialState: ManagementState = {
     addContractError: undefined,
 }
 
+type AccountChangeParams = {
+    lucid: Lucid,
+    wallet: WalletApi
+}
+
 const managementSlice = createSlice({
     name: 'management',
     initialState,
@@ -46,12 +54,27 @@ const managementSlice = createSlice({
             state.selectedTabIndex = action.payload
         },
         addWallet(state, action: PayloadAction<Wallet>) {
-            if (!state.wallets.find(wallet => wallet.address === action.payload.address)) {
+            if (!state.wallets.find(wallet => wallet.pkh === action.payload.pkh)) {
+                if (action.payload.isCurrentlyConnected) {
+                    for (let i = 0; i < state.wallets.length; i++) {
+                        state.wallets[i].isCurrentlyConnected = false
+                    }
+                }
+
                 state.wallets.push(action.payload)
             }
         },
         removeWallet(state, action: PayloadAction<string>) {
             state.wallets.filter(wallet => wallet.address === action.payload)
+        },
+        setConnectedWallet(state, action: PayloadAction<string>) {
+            for (let i = 0; i < state.wallets.length; i++) {
+                if (state.wallets[i].pkh === action.payload) {
+                    state.wallets[i].isCurrentlyConnected = true
+                } else {
+                    console.error(`Could not connect to wallet with pkh ${action.payload}`)
+                }
+            }
         },
         clearWallets(state) {
             state.wallets = []
@@ -94,6 +117,7 @@ export const {
     selectTab,
     addWallet,
     removeWallet,
+    setConnectedWallet,
     clearWallets,
     addContract,
     removeContract,

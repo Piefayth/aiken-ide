@@ -3,17 +3,18 @@ import { RootState } from "../../../app/store"
 import { Mint, Payment, Spend, TransactState, onSuccessfulTransaction, setTransactionSubmissionError, setTransactionSubmissionState } from "../../../features/management/transactSlice"
 import { File } from '../../../features/files/filesSlice'
 import { SerializableAssets, deserializeAssets, deserializeUtxos, serializeAssets } from "../../../util/utxo"
-import { Data, Emulator, Lucid, TxSigned } from "lucid-cardano"
+import { Data, Emulator, Lucid, TxSigned, WalletApi } from "lucid-cardano"
 import { useLucid } from "../../../components/LucidProvider"
 import { Contract, Wallet } from "../../../features/management/managementSlice"
 import { constructObject } from "../../../util/data"
+import { useWallet } from "../../../components/WalletProvider"
 
 function Submit() {
     const transactState = useSelector((state: RootState) => state.transact)
     const files = useSelector((state: RootState) => state.files.files)
     const {contracts, wallets} = useSelector((state: RootState) => state.management)
     const { mints, spends, payments } = transactState
-
+    const { walletApi } = useWallet()
     const dispatch = useDispatch()
     
     const { isLucidLoading, lucid: _lucid } = useLucid()
@@ -99,7 +100,7 @@ function Submit() {
                     className={`button submit-transaction-button ${wasThereAnyFeedback ? 'disabled' : ''}`}
                     onClick={() => {
                         dispatch(setTransactionSubmissionState('building'))
-                        buildTransaction(lucid, transactState, files, contracts, wallets)
+                        buildTransaction(lucid, transactState, files, contracts, wallets, walletApi)
                             .then((signedTransaction) => {
                                 dispatch(setTransactionSubmissionState('submitting'))
                                 return signedTransaction.submit()
@@ -127,7 +128,7 @@ function Submit() {
 }
 
 // TODO: all the sad paths in here need to become user facing errors
-async function buildTransaction(lucid: Lucid, transactState: TransactState, files: File[], contracts: Contract[], wallets: Wallet[]): Promise<TxSigned> {
+async function buildTransaction(lucid: Lucid, transactState: TransactState, files: File[], contracts: Contract[], wallets: Wallet[], currentWalletApi: WalletApi | null): Promise<TxSigned> {
     const { mints, spends, payments, extraSigners, validity, metadataFilename } = transactState
 
     const tx = lucid.newTx()
@@ -278,7 +279,7 @@ async function buildTransaction(lucid: Lucid, transactState: TransactState, file
     const walletSpendAddresses = spends
         .filter(spend => spend.source === 'wallet')
         .map(spend => spend.utxos[0].address)
-
+        
     for (const signerAddress of extraSigners) {
         if (walletSpendAddresses.includes(signerAddress)) {
             continue // wallet will sign this in the next loop
@@ -290,7 +291,14 @@ async function buildTransaction(lucid: Lucid, transactState: TransactState, file
             throw Error(`Could not find wallet for address ${signerAddress}`)
         }
 
-        lucid.selectWalletFromSeed(signerWallet.seed)
+        if (signerWallet.seed) {
+            lucid.selectWalletFromSeed(signerWallet.seed)
+        } else if (currentWalletApi) {
+            lucid.selectWallet(currentWalletApi)    // notable restriction here, you can't easily sign from multiple wallets in non-emulator environments
+        } else {
+            throw Error(`Unable to select wallet for signature for address ${signerAddress}`)
+        }
+        
         unsignedTx.partialSign()
     }
 
@@ -301,7 +309,14 @@ async function buildTransaction(lucid: Lucid, transactState: TransactState, file
             throw Error(`Could not find wallet for adress ${walletSpendAddress}`)
         }
         
-        lucid.selectWalletFromSeed(spendingWallet.seed)
+        if (spendingWallet.seed) {
+            lucid.selectWalletFromSeed(spendingWallet.seed)
+        } else if (currentWalletApi) {
+            lucid.selectWallet(currentWalletApi)
+        } else {
+            throw Error(`Unable to select wallet for signature for address ${walletSpendAddress}`)
+        }
+
         await unsignedTx.partialSign()
     }
     

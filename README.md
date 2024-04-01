@@ -13,8 +13,6 @@ todo:
 
 - compile on a worker thread
 
-- non-emulator networks
-
 - adjust panel sizes by clicking and dragging the divider between them
 
 - selectable aiken version 😭😭😭
@@ -22,5 +20,7 @@ todo:
 - utilities tab for things like getting pkh, or doing to/from hex
 
 - saving workspace to local storage
+
+- ref inputs
 
 - an unimaginably long list of other stuff

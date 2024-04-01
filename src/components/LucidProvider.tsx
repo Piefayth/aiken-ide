@@ -61,7 +61,7 @@ export const LucidProvider = ({ children }: { children: React.ReactNode }) => {
 
                 lucidInstance = await Lucid.new(emulator, network)
             } else if (settings.providerConfig.kind === 'blockfrost') {
-                lucidInstance = await Lucid.new(new Blockfrost(settings.providerConfig.url, settings.providerConfig.apiKey))
+                lucidInstance = await Lucid.new(new Blockfrost(settings.providerConfig.url, settings.providerConfig.apiKey), network)
             } else {
                 throw Error('not implemented')
             }
@@ -78,7 +78,10 @@ export const LucidProvider = ({ children }: { children: React.ReactNode }) => {
                 if (settings.providerConfig.kind === 'emulator') {
                     dispatch(addWallet({
                         address: genesisAddress,
-                        seed: genesisSeed
+                        seed: genesisSeed,
+                        pkh: instance.utils.getAddressDetails(genesisAddress).paymentCredential?.hash!!,
+                        walletVendor: null,
+                        isCurrentlyConnected: false
                     }))
                 }
                 setLucid(instance!!)

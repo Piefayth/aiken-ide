@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react"
-import { Wallet } from "../../../features/management/managementSlice"
+import { Wallet, addWallet, setConnectedWallet } from "../../../features/management/managementSlice"
 import { shortenAddress } from "../../../util/strings"
 import { Lucid, UTxO, toText } from "lucid-cardano"
 import Copy from "../../../components/Copy"
 import { useLucid } from "../../../components/LucidProvider"
+import { useWallet } from "../../../components/WalletProvider"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "../../../app/store"
 
 type WalletUtxosProps = {
     wallet: Wallet
@@ -19,7 +22,7 @@ function Utxo({ utxo, className, withCopy = true }: UtxoProps) {
     return (
         <div className={`utxo-container ${className || ''}`}>
             <div className='txid'>
-                {`${shortenAddress(utxo.txHash, 5, 5)}@${utxo.outputIndex}`} <span>{withCopy ? <Copy value={utxo.txHash}/> : null}</span>
+                {`${shortenAddress(utxo.txHash, 5, 5)}@${utxo.outputIndex}`} <span>{withCopy ? <Copy value={utxo.txHash} /> : null}</span>
             </div>
             <div className='asset-container-container'>
                 {
@@ -38,6 +41,9 @@ function Utxo({ utxo, className, withCopy = true }: UtxoProps) {
 }
 
 function WalletComponent({ wallet }: WalletUtxosProps) {
+    const { walletApi, onAccountChange} = useWallet()
+    const dispatch = useDispatch()
+    const wallets = useSelector((state: RootState) => state.management.wallets)
     const [utxos, setUtxos] = useState<UTxO[] | undefined>(undefined)
     const [utxoError, setUtxoError] = useState<string | undefined>(undefined)
     const { lucid, isLucidLoading } = useLucid()
@@ -46,22 +52,43 @@ function WalletComponent({ wallet }: WalletUtxosProps) {
         if (!lucid || isLucidLoading) {
             return
         }
-
-        lucid.provider.getUtxos(wallet.address)
-            .then(utxos => {
-                setUtxos(utxos)
-            })
-            .catch((e: any) => {
+    
+        const fetchUtxos = async () => {
+            try {
+                if (wallet.seed !== null) {
+                    lucid.selectWalletFromSeed(wallet.seed)
+                    const utxos = await lucid.wallet.getUtxos()
+                    setUtxos(utxos)
+                } else if (walletApi && wallet.isCurrentlyConnected) {
+                    lucid.selectWallet(walletApi)
+                    try {
+                        const utxos = await lucid.wallet.getUtxos()
+                        setUtxos(utxos)
+                    } catch (e: any) {
+                        if ((e.message as string).includes('account changed')) {
+                            onAccountChange()
+                        } else {
+                            setUtxoError(e.message)
+                        }
+                    }
+                } else if (!wallet.isCurrentlyConnected) {
+                    const utxos = await lucid.provider.getUtxos(wallet.address)
+                    setUtxos(utxos)
+                }
+            } catch (e: any) {
                 setUtxoError(e.message)
-            })
-    }, [wallet, lucid, isLucidLoading])
+            }
+        }
+    
+        fetchUtxos()
+    }, [wallet, lucid, isLucidLoading, walletApi])
 
     if (!lucid || isLucidLoading) {
         return
     }
 
     const shortAddress = shortenAddress(wallet.address)
-    const pkh = lucid.utils.getAddressDetails(wallet.address).paymentCredential?.hash!!
+    const pkh = wallet.pkh
 
     return (
         <div
@@ -80,7 +107,7 @@ function WalletComponent({ wallet }: WalletUtxosProps) {
                     pkh
                 </div>
                 <div>
-                    {shortenAddress(pkh, 4, 4)} <Copy value={pkh}/>
+                    {shortenAddress(pkh, 4, 4)} <Copy value={pkh} />
                 </div>
             </div>
             {
@@ -91,7 +118,7 @@ function WalletComponent({ wallet }: WalletUtxosProps) {
                         >
                             {
                                 utxos?.length ? utxos?.map(utxo => {
-                                    return <Utxo key={utxo.txHash + utxo.outputIndex} utxo={utxo}/>
+                                    return <Utxo key={utxo.txHash + utxo.outputIndex} utxo={utxo} />
                                 }) : (<div>No UTxOs at this address.</div>)
                             }
                         </div>

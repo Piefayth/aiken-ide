@@ -46,8 +46,8 @@ const initialState: SettingsState = {
         network: 'Emulator',
         blockfrost: {
             kind: 'blockfrost',
-            apiKey: '', // dont check this in please
-            url: 'https://cardano-mainnet.blockfrost.io/api/v0'
+            apiKey: import.meta.env.VITE_BLOCKFROST_API_KEY || '',
+            url: 'https://cardano-preview.blockfrost.io/api/v0'
         },
         kupmios: {
             kind: 'kupmios',
