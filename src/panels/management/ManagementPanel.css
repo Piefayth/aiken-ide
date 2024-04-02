@@ -1,20 +1,50 @@
-.build-results-content {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    height: calc(94vh - 45px); /* 45px is the height of the tabs */
+@supports ( -moz-appearance:none ){
+    .management-content-scroll-exclusion-wrapper {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(213, 213, 213, 0.163) #00000000;
+        scrollbar-gutter: stable;
+    }
+}
+
+.management-section-shadow {
+    box-shadow: inset 0px 0px 25px 5px rgb(0, 0, 0, 0.25);
 }
 
 .management-section-heading {
     font-size: 30px;
-    padding: 10px;
     margin-bottom: 10px;
     width: 100%;
     border-bottom: 5px solid rgb(64, 140, 216);
     display: flex;
 }
+
+
+.management-content-scroll-exclusion-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+    max-height: calc(97vh - 77px);
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+.management-content {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    background-color: #00000077;
+    width: 100%;
+    flex-grow: 1;
+    padding: 0;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
 
 .summary {
     display: flex;
@@ -110,45 +140,50 @@
     max-width: 100%;
     overflow-x: scroll;
     overflow-y: hidden;
-    scrollbar-width: thin;
     padding: 0px;
-    scrollbar-color: rgba(18, 92, 195, 0.3) rgb(11, 36, 68, 0.7);
-    scroll-padding: 0px;
-    scroll-margin: 0px;
-    height: 45px;
-    min-height: 45px;
+    /* scrollbar-color: rgba(213, 213, 213, 0.163) #00000000; */
+    background-color: #00000000;
+    height: 35px;
+    min-height: 35px;
+    font-size: 13px;
+}
+
+@supports ( -moz-appearance:none ){
+    .management-tab-container {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(213, 213, 213, 0.163) #00000000;
+        scrollbar-gutter: stable;
+    }
 }
 
 .management-tab {
-    background-color: #161616;
     min-width: 100px;
     max-width: 150px;
     height: 100%;
-    border-right: 1px solid rgb(18, 92, 195, 0.3);
+    border-right: 1px solid black;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: inset 0px -3px 3px 0px rgba(0,0,0,0.38);
+    background-color: #00000022;
+}
+
+.management-tab-container .management-tab:first-child {
+    border-left: 1px solid black;
+}
+
+.management-tab:not(.highlight-focused-management-tab):hover {
+    background-color: #ffffff09;
 }
 
 .management-tab:hover {
-    background-color: #4317e422;
     cursor: pointer;
 }
 
+
 .highlight-focused-management-tab {
-    background-color: #1e1e1e;
-    border-bottom: 1px solid rgb(64, 140, 216);
+    background-color: #00000055;
 }
-
-.transact-content {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    height: calc(94vh - 45px); /* 45px is the height of the tabs */
-}
-
 
 .disabled {
     cursor: not-allowed !important;

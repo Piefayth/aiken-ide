@@ -25,4 +25,6 @@ todo:
 
 - contracts with stake addresses
 
+- setting for traces
+
 - an unimaginably long list of other stuff

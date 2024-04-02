@@ -1,25 +1,34 @@
 #root {
   margin: 0 auto;
   text-align: center;
+  height: 100vh;
+  max-height: 100vh;
+  color: #fafafa;
 }
 
 body {
   overflow-y: hidden;
+  padding: 0;
+  margin: 0;
+  background-color: #5a173c;
+  background-image: linear-gradient(225deg, #5a173c 0%, #331e43 45%, #154160 100%);
 }
 
 .main-layout-container {
   display: flex;
   flex-direction: column; 
-  border: solid 1px black;
-  overflow: hidden;
+  max-height: 100%;
+  height: 100%;
 }
 
 .editor-and-management-view-container {
   display: flex;
   flex-direction: row;
-  background-color: rgb(22, 22, 22);
   width: 100%;
   max-width: 100%;
+  max-height: 100%;
+  height: 100%;
+  margin-top: 6px;
 }
 
 .editor-container {
@@ -27,18 +36,22 @@ body {
   flex-direction: column;
   width: 100%;
   max-width: 60vw;
+  height: 100%;
+  max-height: 100%;
   flex: 1;
 }
 
 .editor-content-container {
   display: flex;
   flex-direction: row;
+  max-height: 100%;
 }
 
 .editor-and-tabs-container {
   max-width: 100%;
   min-width: 50vw;
-  max-height: 94vh;
+  max-height: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -46,11 +59,11 @@ body {
 .management-panel-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
   max-width: 40vw;
+  max-height: 100%;
+  height: 100%;
   flex: 1;
   word-wrap: break-word;
-  border-left: 1px solid black;
 }
 
 .tooltip {
@@ -135,4 +148,29 @@ body {
 .button:active {
   background-color: rgb(103, 148, 193);
   cursor: pointer;
+}
+
+@supports ( -moz-appearance:none ){
+  .file-manager-file-list {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(213, 213, 213, 0.163) #00000000;
+      scrollbar-gutter: stable;
+  }
+}
+
+::-webkit-scrollbar-track {
+  background-color: #00000000 !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #ffffff22 !important;
+}
+
+::-webkit-scrollbar-corner  {
+
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }

@@ -146,7 +146,7 @@ function MonacoEditor({ onLoad }: MonacoEditorProps) {
         }
         >
          <Editor 
-            height="calc(94vh - 45px)"  // 45px is the fixed height of tabs
+            height="calc(97vh - 76px)"
             width="100%" 
             theme="aiken-theme" 
             defaultLanguage="aiken" 

@@ -135,32 +135,34 @@ function Wallets() {
             }
         </select>
     )
-
+    
     return (
-        <div className='wallets-content'>
-            <div className="management-section-heading"><strong>Wallets</strong></div>
-            <div className='wallet-buttons'>
+        <div className='management-content-scroll-exclusion-wrapper'>
+            <div className='management-content management-section-shadow'>
+                <div className="management-section-heading"><strong>Wallets</strong></div>
+                <div className='wallet-buttons'>
+                    {
+                        providerKind === 'emulator' ?
+                            null :
+                            connectedWallet ?  null : selectWalletDropdown
+                    }
+                    {
+                        providerKind === 'emulator' ?
+                            generateWalletButton :
+                            connectedWallet ?  null : connectWalletButton
+                    }
+                    {
+                        connectedWallet ?
+                            disconnectWalletButton :
+                            null
+                    }
+                </div>
                 {
-                    providerKind === 'emulator' ?
-                        null :
-                        connectedWallet ?  null : selectWalletDropdown
-                }
-                {
-                    providerKind === 'emulator' ?
-                        generateWalletButton :
-                        connectedWallet ?  null : connectWalletButton
-                }
-                {
-                    connectedWallet ?
-                        disconnectWalletButton :
-                        null
+                    wallets.map(wallet => {
+                        return <WalletComponent key={wallet.address} wallet={wallet} />
+                    })
                 }
             </div>
-            {
-                wallets.map(wallet => {
-                    return <WalletComponent key={wallet.address} wallet={wallet} />
-                })
-            }
         </div>
     )
 }

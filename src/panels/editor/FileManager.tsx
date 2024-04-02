@@ -20,18 +20,18 @@ function FileManager() {
         }
     }, [files.beingRenamedFileIndex])
 
-    useTooltip(files.renameFileError || '', inputRef, { x: 100, y: -10}, () => {
+    useTooltip(files.renameFileError || '', inputRef, { x: 100, y: -10 }, () => {
         dispatch(clearRenameFileError())
     })
 
     return (
         <div className='file-manager-container'>
-            <div className='file-manager-header'>
+            <div className='file-manager-header unselectable'>
                 <div>
                     <strong>Files</strong>
                 </div>
                 <div
-                    className='add-file-icon'
+                    className='add-file-icon unselectable'
                     onClick={() => dispatch(addFile())}
                 >
                     <span className='add-file-icon-plus'>+</span>🗎
@@ -39,7 +39,7 @@ function FileManager() {
 
             </div>
 
-            <div 
+            <div
                 className='file-manager-file-list '
                 onContextMenu={(e: React.MouseEvent) => {
                     e.preventDefault()
@@ -52,79 +52,81 @@ function FileManager() {
                     }))
                 }}
             >
-                {
-                    files.files.map((file, index) => {
-                        const { name, extension } = splitFilename(file.name)
-                        const highlightOpenFocusedFileClass = index === files.currentFileFocusedInEditorIndex ? 'highlight-open-focused-file' : ''
-                        const highlightOpenFileClass = files.openFileIndices.includes(index) ? 'highlight-open-file' : ''
+                <div className='file-entry-wrapper'>
+                    {
+                        files.files.map((file, index) => {
+                            const { name, extension } = splitFilename(file.name)
+                            const highlightOpenFocusedFileClass = index === files.currentFileFocusedInEditorIndex ? 'highlight-open-focused-file' : ''
+                            const highlightOpenFileClass = files.openFileIndices.includes(index) ? 'highlight-open-file' : ''
 
-                        if (index === files.beingRenamedFileIndex) {
-                            return (
-                                <div
-                                    key={index}
-                                    className={`file-manager-file-entry file-rename-entry ${highlightOpenFocusedFileClass} ${highlightOpenFileClass}`}
-                                >
-                                    <input
-                                        ref={inputRef}
-                                        key='unique-id'
-                                        className='file-rename-input'
-                                        type='text'
-                                        defaultValue={file.name}
-                                        onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                                            if (event.key === 'Enter') {
-                                                dispatch(confirmRenameFile(inputRef.current?.value || 'error.error'))
-                                                event.preventDefault();
-                                            } else if (event.key === 'Escape') {
-                                                dispatch(cancelRenameFile())
-                                            }
-                                        }}
-                                        onBlur={() => {
-                                            dispatch(confirmRenameFile(inputRef.current?.value || 'error.error'))
-                                        }}
-                                    />
-                                </div>
-                            )
-                        } else {
-                            return (
-                                <div
-                                    key={index}
-                                    className={`file-manager-file-entry ${highlightOpenFocusedFileClass} ${highlightOpenFileClass} unselectable`}
-                                    onClick={() => {
-                                        dispatch(selectFile(index))
-                                    }}
-                                    onContextMenu={(e: React.MouseEvent) => {
-                                        e.stopPropagation()
-                                        e.preventDefault()
-                                        dispatch(showContextMenu({
-                                            options: [
-                                                { name: 'New File' },
-                                                { 
-                                                    name: 'Delete File',
-                                                    data: {
-                                                        deletedFileIndex: index
-                                                    }
-                                                },
-                                                {
-                                                    name: 'Rename File',
-                                                    data: {
-                                                        renamedFileIndex: index,
-                                                    }
+                            if (index === files.beingRenamedFileIndex) {
+                                return (
+                                    <div
+                                        key={index}
+                                        className={`file-manager-file-entry file-rename-entry ${highlightOpenFocusedFileClass} ${highlightOpenFileClass}`}
+                                    >
+                                        <input
+                                            ref={inputRef}
+                                            key='unique-id'
+                                            className='file-rename-input'
+                                            type='text'
+                                            defaultValue={file.name}
+                                            onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                                                if (event.key === 'Enter') {
+                                                    dispatch(confirmRenameFile(inputRef.current?.value || 'error.error'))
+                                                    event.preventDefault();
+                                                } else if (event.key === 'Escape') {
+                                                    dispatch(cancelRenameFile())
                                                 }
-                                            ],
-                                            position: {
-                                                x: e.clientX,
-                                                y: e.clientY
-                                            }
-                                        }))
-                                    }}
-                                >
-                                    <span className='filename-start'>{name}</span>
-                                    <span className='filename-end'>{extension}</span>
-                                </div>
-                            )
-                        }
-                    })
-                }
+                                            }}
+                                            onBlur={() => {
+                                                dispatch(confirmRenameFile(inputRef.current?.value || 'error.error'))
+                                            }}
+                                        />
+                                    </div>
+                                )
+                            } else {
+                                return (
+                                    <div
+                                        key={index}
+                                        className={`file-manager-file-entry ${highlightOpenFocusedFileClass} ${highlightOpenFileClass} unselectable`}
+                                        onClick={() => {
+                                            dispatch(selectFile(index))
+                                        }}
+                                        onContextMenu={(e: React.MouseEvent) => {
+                                            e.stopPropagation()
+                                            e.preventDefault()
+                                            dispatch(showContextMenu({
+                                                options: [
+                                                    { name: 'New File' },
+                                                    {
+                                                        name: 'Delete File',
+                                                        data: {
+                                                            deletedFileIndex: index
+                                                        }
+                                                    },
+                                                    {
+                                                        name: 'Rename File',
+                                                        data: {
+                                                            renamedFileIndex: index,
+                                                        }
+                                                    }
+                                                ],
+                                                position: {
+                                                    x: e.clientX,
+                                                    y: e.clientY
+                                                }
+                                            }))
+                                        }}
+                                    >
+                                        <span className='filename-start'>{name}</span>
+                                        <span className='filename-end'>{extension}</span>
+                                    </div>
+                                )
+                            }
+                        })
+                    }
+                </div>
             </div>
         </div>
     )

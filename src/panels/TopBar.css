@@ -2,40 +2,96 @@
     display: flex;
     align-items: center;
     justify-content: left;
-    border-bottom: solid 1px black;
     font-size: 20px;
     height: 4vh;
     max-height: 4vh;
+    min-height: 45px;
     overflow: hidden;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border: 1px solid black;
+    gap: 20px;
+    background-color: #00000022;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-shadow: inset 15px 0px 25px 1px rgb(0, 0, 0, 0.18);
 }
 
 .editor-top-bar {
-    background-color: rgb(104, 17, 75);
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    
+    margin-right: 8px;
 }
 
 .management-top-bar {
-    background-color: rgb(18, 92, 195, 0.3);
 }
 
 .top-bar-item {
     padding: 5px;
     margin-top: none;
-    margin-right: 20px;
 }
 
 .editor-top-bar-item {
-    padding: 5px;
     margin-top: none;
-    margin-right: 20px;
-    transition: background-color 0.25s linear;
 }
 
 .editor-top-bar-item:hover {
     cursor: pointer;
-    background-color: rgb(160, 95, 126);
-    transition: background-color 0.25s linear;
 }
 
 .no-last-build-notice {
     margin-left: 10px;
+}
+
+.editor-top-bar-right-side {
+    display: flex;
+    gap: 20px;
+    font-size: 16px;
+}
+
+.editor-top-bar-left-side {
+    display: flex;
+    gap: 20px;
+}
+
+.editor-top-bar-item .editor-top-bar-play-icon {
+    transition: color 0.4s ease;
+    display: inline;
+    color: white;
+}
+
+.editor-top-bar-item:hover .editor-top-bar-play-icon {
+    color: rgb(73, 203, 73);
+}
+
+.editor-top-bar-item .editor-top-bar-build-icon {
+    transition: color 0.25s ease;
+    display: inline;
+    color: white;
+}
+
+.editor-top-bar-item:hover .editor-top-bar-build-icon {
+    color: rgb(105, 183, 182);
+}
+
+.editor-top-bar-item .editor-top-bar-format-icon {
+    transition: color 0.25s ease;
+    display: inline;
+    color: white;
+}
+
+.editor-top-bar-item:hover .editor-top-bar-format-icon {
+    color: rgb(245, 211, 78);
+}
+
+.editor-top-bar-item .editor-top-bar-share-icon {
+    transition: color 0.25s ease;
+    display: inline;
+    color: white;
+}
+
+.editor-top-bar-item:hover .editor-top-bar-share-icon {
+    color: rgb(255, 130, 199);
 }

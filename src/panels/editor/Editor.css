@@ -1,3 +1,42 @@
+.monaco-editor {
+    --vscode-editorGutter-background: #00000077 !important;
+    --vscode-editor-background: #00000000 !important;
+}
+
+.monaco-mouse-cursor-text::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    top: 0;
+    width: calc(100% - 8px);
+    /* Width of the scrollbar */
+    bottom: 0;
+    pointer-events: none;
+    /* Allows clicks to pass through to the scrollbar */
+    background-color: #00000077;
+    z-index: -100;
+    
+    box-shadow: inset -15px -25px 25px 1px rgb(0, 0, 0, 0.18);
+}
+
+.margin-view-overlays {
+    box-shadow: inset 15px 0px 25px 1px rgb(0, 0, 0, 0.18);
+}
+
+.scrollbar {
+    width: 8px !important;
+}
+
+.slider {
+    width: 8px !important;
+}
+
+.decorationsOverviewRuler {
+    width: 8px !important;
+    z-index: -99999;
+}
+
+
 .editor-tab-container {
     display: flex;
     flex-direction: row;
@@ -5,41 +44,55 @@
     justify-content: start;
     max-width: 100%;
     overflow-x: scroll;
-    overflow-y: hidden;
-    scrollbar-width: thin;
+    overflow-y: scroll;
     padding: 0px;
-    scrollbar-color: rgb(175, 13, 126, 0.3) rgb(55, 25, 45, 1);
-    scroll-padding: 0px;
-    scroll-margin: 0px;
-    height: 45px;
-    min-height: 45px;
+    /* scrollbar-color: rgba(213, 213, 213, 0.163) #00000000; */
+    background-color: #00000000;
+    min-height: 35px;
+    font-size: 13px;
+}
+
+@supports (-moz-appearance:none) {
+    .editor-tab-container {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(213, 213, 213, 0.163) #00000000;
+        scrollbar-gutter: stable;
+    }
 }
 
 .editor-tab {
-    background-color: #161616;
-    min-width: 200px;
-    max-width: 200px;
-    height: 100%;
+    min-width: 120px;
+    max-width: 120px;
     border-right: 1px solid black;
     display: flex;
+    height: 100%;
     justify-content: center;
     align-items: center;
+    border-bottom: 1px solid black;
+    box-sizing: border-box;
+    box-shadow: inset 0px -3px 3px 0px rgba(0, 0, 0, 0.38);
+    background-color: #00000022;
+}
+
+.editor-tab-container .editor-tab:first-child {
+    border-left: 1px solid black;
 }
 
 .highlight-open-focused-tab {
-    background-color: #1e1e1e;
-    border-bottom: 1px solid rgb(164, 28, 148);
+    background-color: #00000055;
+}
+
+.editor-tab:not(.highlight-open-focused-tab):hover {
+    background-color: #ffffff09;
 }
 
 .editor-tab:hover {
-    background-color: #e417c622;
     cursor: pointer;
 }
 
 .editor-tab-label {
     max-width: 100%;
     overflow: hidden;
-    padding: 15px;
     text-overflow: ellipsis;
     display: flex;
 }
@@ -47,44 +100,74 @@
 .file-manager-container {
     display: flex;
     flex-direction: column;
-    width: 10vw;
     min-width: 10vw;
-    background-color: #1e1e1e;
+    height: calc(97vh - 42px);
+    background-color: #00000000;
 }
 
 .file-manager-header {
-    background-color: #3e3e3e;
     display: flex;
     padding-left: 10px;
     padding-right: 10px;
-    border-right: 1px solid rgb(67, 67, 67);
     justify-content: space-between;
+    align-items: center;
+    height: 35px;
 }
 
 .file-manager-file-list {
-    background-color: #1e1e1e;
     display: flex;
     flex-direction: column;
     align-items: start;
     padding: 0;
     margin: 0;
     width: 100%;
-    height: 100%;
+    font-size: 14px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    flex: 1;
+    border-right: 1px solid black;
+}
+
+.file-entry-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    background-color: #00000044;
+    flex-grow: 1;
+    box-shadow: inset -4px 0px 25px 1px rgba(0, 0, 0, 0.18);
+}
+
+@supports (-moz-appearance:none) {
+    .file-manager-file-list {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(213, 213, 213, 0.163) #00000000;
+        scrollbar-gutter: stable;
+    }
 }
 
 .file-manager-file-entry {
-    width: 94%;
+    width: 100%;
     border: 1px solid transparent;
-    border-image: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(164, 28, 148, 1)) 1 stretch;
     display: flex;
     align-items: center;
     justify-content: start;
-    padding-left: 10px;
-    
+    padding-left: 20px;
+    padding-bottom: 2px;
+    box-sizing: border-box;
 }
 
 .file-manager-file-entry:hover {
-    background-color: #e417c622;
+    cursor: pointer;
+}
+
+.file-manager-file-entry:not(.highlight-open-focused-file):hover {
+    background-color: #ffffff22;
+}
+
+.management-tab:hover {
     cursor: pointer;
 }
 
@@ -104,8 +187,7 @@
 }
 
 .highlight-open-focused-file {
-    border: 1px solid transparent;
-    border-image: linear-gradient(to left, rgba(1, 220, 45, 0.586), rgba(164, 28, 148, 1)) 1 stretch;
+    background-color: #ffffff44;
 }
 
 .add-file-icon {
@@ -115,7 +197,7 @@
 }
 
 .add-file-icon:hover {
-    color: rgb(255, 255, 255);
+    color: rgba(255, 255, 255, 0.471);
     cursor: pointer;
 }
 
@@ -124,14 +206,15 @@
 }
 
 .file-rename-entry {
-    border: solid 1px white;
-    background-color: rgb(73, 2, 52);
+    border: solid 1px rgba(255, 255, 255, 0.26);
+    background-color: #00000088;
 }
 
 .file-rename-input {
     border: none;
     font-size: 16px;
     background-color: #00000000;
+    width: 100%;
 }
 
 .file-rename-input:hover {

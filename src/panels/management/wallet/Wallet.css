@@ -1,12 +1,3 @@
-.wallets-content {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    height: calc(94vh - 45px); /* 45px is the height of the tabs */
-}
-
 .wallet-utxos-container {
     display: flex;
     flex-direction: column;

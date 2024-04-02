@@ -22,18 +22,20 @@ function Transact() {
 
 
     return (
-        <div className='transact-content'>
-            <div className='management-section-heading'><strong>Transact</strong></div>
+        <div className='management-content-scroll-exclusion-wrapper'>
+            <div className='management-content management-section-shadow'>
+                <div className='management-section-heading'><strong>Transact</strong></div>
 
-            <Spends />
+                <Spends />
 
-            <Mints />
+                <Mints />
 
-            <Payments />
+                <Payments />
 
-            <Extras />
+                <Extras />
 
-            <Submit />
+                <Submit />
+            </div>
         </div>
     )
 }
