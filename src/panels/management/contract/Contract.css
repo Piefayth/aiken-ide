@@ -5,49 +5,72 @@
     align-items: start;
     min-width: 300px;
     padding: 15px;
-    margin-top: 10px;
+    gap: 30px;
 }
 
 .contract-container {
-    margin-left: 20px;
-    margin-bottom: 20px;
     min-width: 250px;
     display: flex;
     flex-direction: column;
     align-items: start;
-    background-color: rgb(11, 11, 25);
-    border: solid 1px  rgb(158, 172, 181);
+    border: solid 1px black;
+    box-shadow: 3px 3px 5px 2px rgb(0, 0, 0, 0.25);
 }
 
 .contract-header {
     display: flex;
-    background-color: rgb(37, 36, 76);
-    border: solid 1px  rgb(158, 172, 181);
+    box-sizing: border-box;
+    border-bottom: solid 1px black;
+    background-color: var(--main-background-color);
     width: 100%;
     padding: 5px;
     padding-left: 10px;
-    margin-bottom: 5px;
     display: flex;
     box-sizing: border-box;
+    align-items: center;
 }
 
-.delete-contract-button {
-    padding-left: 5px;
-    padding-right: 5px;
-    margin: 10px;
+.contract-data {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: var(--main-background-darker);
 }
 
 .delete-contract-button-container {
     display:flex;
-    justify-content: end;
-    width: 100%;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 15px;
+    
 }
 
 
+.contract-created-at {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    font-size: 12px;
+    margin-bottom: 2px;
+    color: #ddd;
+}
+
+.contract-created-at-label {
+    color: #ddd;
+}
+
+.contract-created-at-date {
+}
+
+
+.contracts-subheading {
+    margin-left: 15px;
+    font-size: 26px;
+    margin-top: 20px;
+}
 
 .contract-name {
-    font-weight: bold;
-    font-size: 16px;
+    font-size: 13px;
 }
 
 .contract-version {
@@ -55,60 +78,83 @@
     width: 100%;
     text-align: right;
     box-sizing: border-box;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .contract-data-holder {
     display: flex;
     flex-direction: row;
     width: 100%;
+    margin-bottom: 10px;
 }
 
 .contract-params {
-    margin-left: 10px;
-    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
-    align-items:start;
+    align-items:flex-start;
     width: 100%;
 }
+
+.add-contract-warning {
+    font-size: 14px;
+    align-items: start;
+    text-align: left;
+    margin-left: 10px;
+}
+
 .contract-params-content {
-    margin-left: 5px;
     font-size: 12px;
+    color: #ddd;
+    display: flex;
+    width: 100%;
+    margin-left: 4px;
 }
 
 .contract-params-label {
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 12px;
 }
 
-.contracts-heading {
-    font-size: 30px;
-    margin-bottom: 10px;
-    width: 100%;
-    border-bottom: 5px solid rgb(64, 140, 216);
+.params-label-container {
     display: flex;
+    flex-direction: column;
 }
-
 .add-contract-container {
     display: flex;
     flex-direction: column;
     align-items: start;
     margin-left: 15px;
-    border-left: 2px solid rgb(64, 140, 216);
-    border-bottom: 2px solid rgb(64, 140, 216);
-    min-width: 200px;
-    padding: 10px;
+    min-width: 500px;
+    border: solid 1px black;
+    box-shadow: 3px 3px 5px 1px rgb(0, 0, 0, 0.25);
+    background-color: var(--main-background-darker);
 }
 
 .add-contract-content {
     display: flex;
     flex-direction: row;
+    padding-left: 10px;
 }
 
 .add-contract-header {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 20px;
+    font-size: 16px;
+    width: calc(100%);
+    box-sizing: border-box;
+    border-bottom: solid 1px black;
+    background-color: var(--main-background-color);
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    display: flex;
+}
+
+.add-contract-help-text {
+    font-size: 13px;
+    margin-bottom: 10px;
+    padding: 10px;
 }
 
 .add-contract-selection-container {
@@ -119,35 +165,16 @@
     margin-right: 10px;
 }
 
-.add-contract-select {
-    border-radius: 0px;
-    border: 1px solid rgb(158, 172, 181);
-}
-
-.add-contract-button {
-    padding-left: 5px;
-    padding-right: 5px;
-}
-
-.add-contract-button:hover {
-    background-color: rgb(32, 80, 128);
-    cursor: pointer;
-}
-
-.add-contract-button:active {
-    background-color: rgb(103, 148, 193);
-    cursor: pointer;
-}
-
-
 .add-contract-button-container {
     margin-top: 20px;
+    align-self: flex-end;
+    padding: 10px;
 }
 
 @supports ( -moz-appearance:none ){
     .contracts-content {
         scrollbar-width: thin;
-        scrollbar-color: rgba(213, 213, 213, 0.163) #00000000;
+        scrollbar-color: var(--scrollbar-color) #0000;
         scrollbar-gutter: stable;
     }
 }

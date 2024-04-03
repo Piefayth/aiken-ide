@@ -38,7 +38,7 @@ export const projectSlice = createSlice({
                     }
                 })
             }
-
+            console.log(state.buildResults)
 
         },
     }

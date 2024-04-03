@@ -146,10 +146,11 @@ function MonacoEditor({ onLoad }: MonacoEditorProps) {
         }
         >
          <Editor 
-            height="calc(97vh - 76px)"
+            height="calc(97vh - 60px)"
             width="100%" 
             theme="aiken-theme" 
             defaultLanguage="aiken" 
+            className='monaco-customizer'
             defaultValue={files.files[0].content} 
             options={{ minimap: { enabled: false } }}
             onMount={handleEditorDidMount}

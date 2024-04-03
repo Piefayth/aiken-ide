@@ -14,6 +14,7 @@ export interface ContractInput {
     script: Script,
     name: string,
     paramsFileName: string,
+    paramsContent: string,
     address: string,
     scriptHash: string
 }
@@ -27,6 +28,7 @@ export type AddressUpdate = Record<string, string> // <oldAddress, newAddress>
 
 export type Contract = {
     version: number,
+    createdAt: number,
 } & ContractInput
 
 interface ManagementState {
@@ -113,7 +115,8 @@ const managementSlice = createSlice({
 
             state.contracts.unshift({
                 ...action.payload,
-                version
+                version,
+                createdAt: new Date().valueOf()
             })
         },
         removeContract(state, action: PayloadAction<DeleteContractInput>) {

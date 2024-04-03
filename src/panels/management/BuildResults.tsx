@@ -54,18 +54,21 @@ function BuildResults() {
 
         const testsSegment = !numTests || numTests <= 0 ? null : (
             <div className="build-results-section tests">
-                <span className='build-result-heading'>Tests</span>
-                {
-                    buildResult?.test_results.map((test) => {
-                        return (
-                            <div key={test.index} className="build-results-individual-result">
-                                <div className="test-item">
-                                    {test.success ? "✔️ " : "❌ "}{test.name} (CPU: {test.spent_budget.cpu}, Mem: {test.spent_budget.mem})
+                <span className='build-result-heading tests-heading'>Tests</span>
+
+                <div className='tests-body-container'>
+                    {
+                        buildResult?.test_results.map((test) => {
+                            return (
+                                <div key={test.index} className="build-results-individual-result">
+                                    <div className="test-item">
+                                        {test.success ? "✔️ " : "❌ "}{test.name} (CPU: {test.spent_budget.cpu}, Mem: {test.spent_budget.mem})
+                                    </div>
                                 </div>
-                            </div>
-                        )
-                    })
-                }
+                            )
+                        })
+                    }
+                </div>
             </div>
         )
         
@@ -74,10 +77,10 @@ function BuildResults() {
                 <div key={index} className='build-result-container'>
                     <div className="build-result-filename">{project.builtFiles[index].name}</div>
                     <div className="summary">
-                        <span className="summary-entry">Errors: <span className="error-number">{`${numErrors || 0}`}</span></span>
-                        <span className="summary-entry">Warnings: <span className="warning-number">{`${numWarnings || 0}`}</span></span>
-                        <span className="summary-entry">
-                            Tests: <span className="test-number">{`${numTests || 0} `}
+                        <span className="summary-entry error-summary">Errors <span className="error-number">{`${numErrors || 0}`}</span></span>
+                        <span className="summary-entry warning-summary">Warnings <span className="warning-number">{`${numWarnings || 0}`}</span></span>
+                        <span className="summary-entry test-summary">
+                            Tests <span className="test-number">{`${numTests || 0} `}
                                 {
                                     numFailedTests > 0 ? (
                                         <span>
@@ -102,8 +105,8 @@ function BuildResults() {
     return (
         <div className='management-content-scroll-exclusion-wrapper'>
             <div className="management-content management-section-shadow">
-                <div className="management-section-heading"><strong>Build Results</strong></div>
-                { project.buildResults && project.buildResults?.length > 0 ? <></> : <div className="no-last-build-notice"> No last build to display. Click "Test" to compile.</div>}
+                <div className="management-section-heading">Build Results</div>
+                { project.buildResults && project.buildResults?.length > 0 ? <></> : <div className="no-last-build-notice card"> No last build to display. Click "Test" to compile.</div>}
                 {
                     project.buildResults?.map((result, index) => {
                         return buildResultView(result, index) 

@@ -331,36 +331,6 @@
     padding-left: 10px;
 }
 
-.select {
-    border-radius: 0px;
-    border: 1px solid rgb(158, 172, 181);
-    min-width: 100px;
-}
-
-input {
-    border-radius: 0px;
-    border: 1px solid rgb(158, 172, 181);
-}
-input:hover {
-    border: 1px solid rgb(158, 172, 181);
-    outline: none;
-}
-input:focus {
-    border: 1px solid rgb(158, 172, 181);
-    outline: none;
-}
-
-select {
-    border-radius: 0px;
-    border: 1px solid rgb(158, 172, 181);
-}
-
-.text-input {
-    border: 1px solid white;
-    font-size: 15px;
-    background-color: #00000000;
-    height: 17px;
-}
 
 .transact-payment-error-container {
     padding-left: 20px;

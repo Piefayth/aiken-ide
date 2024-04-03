@@ -139,7 +139,7 @@ function Wallets() {
     return (
         <div className='management-content-scroll-exclusion-wrapper'>
             <div className='management-content management-section-shadow'>
-                <div className="management-section-heading"><strong>Wallets</strong></div>
+                <div className="management-section-heading">Wallets</div>
                 <div className='wallet-buttons'>
                     {
                         providerKind === 'emulator' ?

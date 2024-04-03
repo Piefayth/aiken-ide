@@ -24,7 +24,7 @@ function Transact() {
     return (
         <div className='management-content-scroll-exclusion-wrapper'>
             <div className='management-content management-section-shadow'>
-                <div className='management-section-heading'><strong>Transact</strong></div>
+                <div className='management-section-heading'>Transact</div>
 
                 <Spends />
 

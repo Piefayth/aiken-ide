@@ -1,5 +1,5 @@
 .monaco-editor {
-    --vscode-editorGutter-background: #00000077 !important;
+    --vscode-editorGutter-background: var(--main-background-darkest) !important;
     --vscode-editor-background: #00000000 !important;
 }
 
@@ -13,11 +13,12 @@
     bottom: 0;
     pointer-events: none;
     /* Allows clicks to pass through to the scrollbar */
-    background-color: #00000077;
     z-index: -100;
     
     box-shadow: inset -15px -25px 25px 1px rgb(0, 0, 0, 0.18);
+    background-color:var(--main-background-darkest)
 }
+
 
 .margin-view-overlays {
     box-shadow: inset 15px 0px 25px 1px rgb(0, 0, 0, 0.18);
@@ -29,6 +30,7 @@
 
 .slider {
     width: 8px !important;
+    background: var(--scrollbar-color);
 }
 
 .decorationsOverviewRuler {
@@ -46,7 +48,6 @@
     overflow-x: scroll;
     overflow-y: scroll;
     padding: 0px;
-    /* scrollbar-color: rgba(213, 213, 213, 0.163) #00000000; */
     background-color: #00000000;
     min-height: 35px;
     font-size: 13px;
@@ -55,7 +56,7 @@
 @supports (-moz-appearance:none) {
     .editor-tab-container {
         scrollbar-width: thin;
-        scrollbar-color: rgba(213, 213, 213, 0.163) #00000000;
+        scrollbar-color: var(--scrollbar-color) #0000;
         scrollbar-gutter: stable;
     }
 }
@@ -71,7 +72,7 @@
     border-bottom: 1px solid black;
     box-sizing: border-box;
     box-shadow: inset 0px -3px 3px 0px rgba(0, 0, 0, 0.38);
-    background-color: #00000022;
+    background-color: var(--main-background-dark);
 }
 
 .editor-tab-container .editor-tab:first-child {
@@ -79,11 +80,11 @@
 }
 
 .highlight-open-focused-tab {
-    background-color: #00000055;
+    background-color: var(--main-background-darkest);
 }
 
 .editor-tab:not(.highlight-open-focused-tab):hover {
-    background-color: #ffffff09;
+    background-color: var(--main-background-color);
 }
 
 .editor-tab:hover {
@@ -101,8 +102,7 @@
     display: flex;
     flex-direction: column;
     min-width: 10vw;
-    height: calc(97vh - 42px);
-    background-color: #00000000;
+    height: calc(97vh - 26px);
 }
 
 .file-manager-header {
@@ -135,7 +135,7 @@
     padding: 0;
     margin: 0;
     width: 100%;
-    background-color: #00000044;
+    background-color: var(--main-background-darker);
     flex-grow: 1;
     box-shadow: inset -4px 0px 25px 1px rgba(0, 0, 0, 0.18);
 }
@@ -143,7 +143,7 @@
 @supports (-moz-appearance:none) {
     .file-manager-file-list {
         scrollbar-width: thin;
-        scrollbar-color: rgba(213, 213, 213, 0.163) #00000000;
+        scrollbar-color: var(--scrollbar-color) #0000;
         scrollbar-gutter: stable;
     }
 }

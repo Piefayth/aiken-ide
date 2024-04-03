@@ -10,12 +10,12 @@ function ManagementTopBar() {
     const displayNetwork = network === 'Custom' ? 'Emulator' : network
     return (
         <div className='top-bar management-top-bar'>
-            <div className='top-bar-item'><strong>Network</strong>: {displayNetwork}</div>
-            <div 
+            {/* <div className='top-bar-item'><strong>Network</strong>: {displayNetwork}</div> */}
+            {/* <div 
                 className='top-bar-item'
                 onClick={() => dispatch(toggleSettings())}
-            ><strong>Settings</strong>
-            </div>
+            >Settings
+            </div> */}
 
             {/* <div className='top-bar-item'><strong>Status</strong>: Not Connected</div> */}
         </div>

@@ -59,12 +59,13 @@ function AddContract() {
 
     return (
         <div className='add-contract-container'>
-            <div className='add-contract-header'>Add a Contract</div>
+                <div className='add-contract-header'>Add a Contract</div>
+                <div className='add-contract-help-text'>Create a parameterized validator from a compiled Aiken program or a Native Script.</div>
             <div className='add-contract-content'>
                 <div className='add-contract-selection-container'>
                     <div className='input-label'>Script Kind </div>
                     <select
-                        className='add-contract-select'
+                        className='select'
                         defaultValue={scriptType}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                             setScriptType(e.target.value as ScriptKind)
@@ -76,12 +77,12 @@ function AddContract() {
                 </div>
 
                 <div className='add-contract-selection-container'>
-                    <div className='input-label'>Validator </div>
+                    <div className='input-label'>Validator Name </div>
                     {
                         scriptType === 'aiken' ?
                             (
                                 <select
-                                    className='add-contract-select'
+                                    className='select'
                                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                         setScriptName(e.target.value)
                                     }}
@@ -96,7 +97,7 @@ function AddContract() {
                                 </select>
                             ) : (
                                 <select
-                                    className='add-contract-select'
+                                    className='select'
                                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                         setScriptName(e.target.value)
                                     }}
@@ -121,11 +122,11 @@ function AddContract() {
                 </div>
 
                 <div className='add-contract-selection-container'>
-                    {scriptType === 'aiken' ? <div className='input-label'>Params </div> : null}
+                    {scriptType === 'aiken' ? <div className='input-label'>Params File Name </div> : null}
                     {scriptType === 'aiken' ?
                         (
                             <select
-                                className='add-contract-select'
+                                className='select'
                                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                     setParamsFilename(e.target.value)
                                 }}
@@ -144,7 +145,6 @@ function AddContract() {
             </div>
 
             <div className='add-contract-selection-container add-contract-button-container'>
-                    <div></div>
                     <button
                         ref={addButtonRef}
                         className={`add-contract-button button ${isCreateDisabledClass}`}
@@ -189,6 +189,7 @@ function AddContract() {
                                     script: parameterizedValidator,
                                     name: validator.name,
                                     paramsFileName: paramsJsonFile?.name || 'None',
+                                    paramsContent: paramsJsonFile?.content || '',
                                     address,
                                     scriptHash
                                 }))
@@ -205,6 +206,7 @@ function AddContract() {
                                             script: parameterizedValidator,
                                             name: scriptName!!.split('.')[0],
                                             paramsFileName: nativeScriptJsonFile?.name,
+                                            paramsContent: nativeScriptJson || '',
                                             address,
                                             scriptHash
                                         }))
