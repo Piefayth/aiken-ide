@@ -46,7 +46,7 @@ function ContractView({ contract }: ContractViewParams) {
         return <></>
     }
 
-    const loadingSpinner = <div className="contracts-loader"><div className="lds-ring"><div></div><div></div><div></div><div></div></div></div>
+    const loadingSpinner = <div className="contracts-loader">Fetching...<div className="lds-ring"><div></div><div></div><div></div><div></div></div></div>
 
     const balances = sumAssets(utxos.map(utxo => utxo.assets))
 
@@ -56,10 +56,12 @@ function ContractView({ contract }: ContractViewParams) {
             className={`contract-container ${isExpanded ? '' : 'contract-container-collapsed'}`}
         >
             <div className='contract-header'>
+                <div className='flex-row'>
                 <div className='contract-name'>
                     {contract.name} <span className='contract-version'>v{contract.version}</span>
                 </div>
-                <div className='contract-address'>{shortenAddress(contract.address)}<Copy value={contract.address} /></div>
+                
+                </div>
                 <div
                     className='expand'
                     onClick={() => {
@@ -80,12 +82,10 @@ function ContractView({ contract }: ContractViewParams) {
             </div>
 
             {
-                isExpanded && isLoadingUtxos ? loadingSpinner : null
-            }
-            {
-                isExpanded && !isLoadingUtxos ? (
+                isExpanded ? (
                     <div className='contract-data'>
                         <div className='contract-info'>
+
                             <div className='contract-data-holder'>
                                 <div className='contract-params'>
                                     <div className='contract-params-label'>Script Hash</div>
@@ -94,16 +94,33 @@ function ContractView({ contract }: ContractViewParams) {
                                     </div>
                                 </div>
                             </div>
-
                             <div className='contract-data-holder'>
-                                {/* {JSON.stringify(serializeAssets(balances), null, 2)} */}
+                                <div className='contract-params'>
+                                    <div className='contract-params-label'>Address</div>
+                                    <div className='contract-params-content'>
+                                    <span>{shortenAddress(contract.address)}<Copy value={contract.address} /></span>
+                                    </div>
+                                </div>
                             </div>
-
-
+                            <div className='contract-data-holder'>
+                                <div className='contract-params'>
+                                    <div className='contract-params-label'>Balance</div>
+                                    <div className='contract-params-content'>
+                                    <span>₳ {balances['lovelace'] ? (Number(balances['lovelace']) / 1000000).toFixed(6) : 0}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div className='contract-params params-label-container'>
-                                <div className='contract-params-label'>Parameters</div>
-                                <div className='contract-params-content'>{contract.paramsFileName}</div>
+                                <div className={`show-params-text ${contract.paramsFileName !== 'None' ? 'underline' : ''}`}>
+                                    {
+                                        contract.paramsFileName !== 'None' ?
+                                            contract.script.type === 'Native' ? <JsonPopup jsonString={contract.paramsContent}>Show Script</JsonPopup> : <JsonPopup jsonString={contract.paramsContent}>Show Params</JsonPopup>
+                                            : 'No params'
+                                    }
+                                </div>
                             </div>
+
                             <div className='delete-contract-button-container'>
 
                                 <button
@@ -120,9 +137,9 @@ function ContractView({ contract }: ContractViewParams) {
                         <div className='contract-utxos-wrapper'>
                             <div className='utxos-heading'>Unspent Outputs</div>
                             {
-                                utxos.length > 0 ? <div className='contract-utxos'>
+                                <div className='contract-utxos'>
                                     {
-                                        utxos.map(utxo => {
+                                        isExpanded && isLoadingUtxos ? loadingSpinner : utxos.length > 0 ? utxos.map(utxo => {
                                             const parsedDatum = utxo.datum ? deconstructObject(Data.from(utxo.datum)) : null
 
                                             return (
@@ -170,9 +187,9 @@ function ContractView({ contract }: ContractViewParams) {
                                                     </div>
                                                 </>
                                             )
-                                        })
+                                        }) : <div className='no-unspent-outputs'>No unspent outputs found at the contract address.</div>
                                     }
-                                </div> : <span className='no-unspent-outputs'>No unspent outputs found at this address.</span>
+                                </div>
                             }
                         </div>
                     </div>

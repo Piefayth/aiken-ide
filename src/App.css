@@ -176,8 +176,8 @@ button.disabled:hover {
 }
 
 .copy-widget {
-  margin-left: 10px;
   padding: 2px;
+  min-width: 25px;
 }
 
 .select {

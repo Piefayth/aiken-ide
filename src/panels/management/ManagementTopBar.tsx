@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import '../TopBar.css';
 import { RootState } from '../../app/store';
-import { toggleSettings } from '../../features/settings/settingsSlice';
 
 function ManagementTopBar() {
     const network = useSelector((state: RootState) => state.settings.network)

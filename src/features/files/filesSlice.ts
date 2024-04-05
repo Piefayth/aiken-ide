@@ -45,6 +45,18 @@ test quicksort_2() {
 }
 `
 
+const OTHER_AIKEN_CODE = `use aiken/transaction.{
+  ScriptContext
+}
+
+
+validator {
+  fn trivial(_r: Data, _ctx: ScriptContext) -> Bool {
+      True
+  }
+}
+`
+
 export interface File {
   name: string,
   content: string,
@@ -73,6 +85,10 @@ const initialState: FileState = {
     name: 'example.ak',
     content: SOME_AIKEN_CODE,   // when do we update content??
     type: 'aiken'
+  },{
+    name: 'trivial.ak',
+    content: OTHER_AIKEN_CODE,
+    type: 'aiken',
   },{
     name: 'params.json',
       content: JSON.stringify([{
