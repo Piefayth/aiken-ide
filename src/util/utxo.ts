@@ -67,11 +67,16 @@ function sumAssets(assetsArray: Assets[]): Assets {
     return totalAssets;
 }
 
+function isSameUtxo(utxo1: UTxO, utxo2: UTxO) {
+    return utxo1.txHash === utxo2.txHash && utxo1.outputIndex === utxo2.outputIndex
+}
+
 
 export {
     serializeUtxos,
     deserializeUtxos,
     serializeAssets,
     deserializeAssets,
-    sumAssets
+    sumAssets,
+    isSameUtxo
 }

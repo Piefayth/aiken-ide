@@ -157,6 +157,10 @@ body {
   user-select: none;
 }
 
+.underline {
+  text-decoration: underline;
+}
+
 .disabled {
   opacity: 0.2;  
   cursor: not-allowed !important;
@@ -208,6 +212,10 @@ button.disabled:hover {
 
 .button {
   font-size: 16px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   outline: none;
   border: solid 1px black;
   padding: 5px;

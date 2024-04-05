@@ -1,8 +1,10 @@
 import { useDispatch, useSelector } from "react-redux"
-import { UtxoSelector } from "./UtxoSelector"
 import { RootState } from "../../../app/store"
 import { removeSpend } from "../../../features/management/transactSlice"
 import { shortenAddress } from "../../../util/strings"
+import { BetterUtxoSelector } from "./BetterUtxoSelector"
+import { deserializeAssets, sumAssets } from "../../../util/utxo"
+import { toText } from "lucid-cardano"
 
 function Spends() {
     const spends = useSelector((state: RootState) => state.transact.spends)
@@ -10,79 +12,74 @@ function Spends() {
 
     return (
         <div className='transact-section'>
+
             <div className='transact-spend-header'>UTxO Selection</div>
-            <div className='transact-spend-message-container'>
-                {
-                    spends.length === 0 ?
-                        <div>
-                            <span style={{color: '#ff9353'}}>⚠</span> Choose at least one UTxO to spend.
-                        </div> :
-                        <div>
-                            {`${spends.length} spend(s) selected.`}
-                        </div>
-                }
-            </div>
+
+            <div className='spending-list-header'>Inputs</div>
+
             <div className='transact-spends-container'>
                 {
+                    spends.length === 0 ?
+                        <div className='transact-spend-message-container'>
+                            <span style={{ color: '#ff9353', marginRight: 5 }}>⚠</span> Choose at least one UTxO to spend.
+                        </div> : null
+                }
+
+                {
                     spends.map((spend, index) => {
+                        const spendAssets = sumAssets(spend.utxos.map(utxo => deserializeAssets(utxo.assets)))
                         return (
                             <div
                                 key={spend.utxos[0].txHash + spend.utxos[0].outputIndex}
                                 className='transact-spend-container'
                             >
-                                <div className='transact-spend-address-and-close'>
-                                    <div className='transact-spend-address'>
-                                        {shortenAddress(spend.utxos[0].address)}
-                                    </div>
-                                    <div className='transact-spend-close'>
-                                        <button
-                                            className='button'
-                                            style={{ fontSize: 12 }}
-                                            onClick={() => {
-                                                dispatch(removeSpend(index))
-                                            }}
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className='transact-spend-source'>
-                                    <div className='input-label'>Source</div>
-                                    <div className='transact-spend-source-text'>
-                                        {` ${spend.source ? (spend.source.charAt(0).toUpperCase() + spend.source.slice(1)) : 'Custom'}`}
-                                    </div>
-                                </div>
-
-                                <div className='transact-spend-redeemer'>
-                                    <div className='input-label'>Redeemer</div>
-                                    <div className='transact-spend-redeemer-filename'>{` ${spend.redeemerFileName || 'None'}`}</div>
-                                </div>
-
-                                <div className='transact-spend-utxos'>
-                                    <div className='input-label'>UTxOs</div>
-                                    <div className='transact-spend-utxo-display'>
+                                <div className='transact-spend-data'>
+                                    <div className='spend-data-label'>Assets</div>
+                                    <div className='assets-container'>
                                         {
-                                            spend.utxos.map(spendingUtxo => {
-                                                return (
-                                                    <div
-                                                        key={spendingUtxo.txHash + spendingUtxo.outputIndex}
-                                                    >
-                                                        {`${shortenAddress(spendingUtxo.txHash, 4, 6)}@${spendingUtxo.outputIndex}`}
-                                                    </div>
 
+                                            Object.entries(spendAssets).map(([assetName, quantity]) => {
+                                                return (
+                                                    <div key={assetName} className='asset'>
+                                                        <div>{assetName === 'lovelace' ? assetName : `[${shortenAddress(assetName.substring(0, 55), 4, 4)}] ${toText(assetName.substring(56))}`}</div>
+                                                        <div>{quantity.toString()}</div>
+                                                    </div>
                                                 )
                                             })
                                         }
                                     </div>
                                 </div>
+                                <div className='transact-spend-data'>
+                                    <div className='spend-data-label'>Source</div>
+                                    <div className='transact-spend-data-content'>
+                                        {` ${spend.source ? (spend.source.charAt(0).toUpperCase() + spend.source.slice(1)) : 'Custom'}`}
+                                        <div className='spend-data-wallet-address'>{`${shortenAddress(spend.utxos[0].address, 6, 6)}`}</div>
+                                    </div>
+                                </div>
 
+                                <div className='transact-spend-data'>
+                                    <div className='spend-data-label'>Redeemer</div>
+                                    <div className='transact-spend-data-content'>{` ${spend.redeemerFileName || 'None'}`}</div>
+                                </div>
+
+                                <div className='spend-remove-input-container'>
+                                    <button
+                                        className='button danger-button'
+                                        style={{ fontSize: 12 }}
+                                        onClick={() => {
+                                            dispatch(removeSpend(index))
+                                        }}
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
                             </div>
                         )
                     })
                 }
             </div>
-            <UtxoSelector />
+
+            <BetterUtxoSelector />
         </div>
     )
 }

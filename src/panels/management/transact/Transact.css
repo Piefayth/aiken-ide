@@ -45,47 +45,15 @@
     padding-left: 10px;
 }
 
-.utxo-source-select {
-    border-radius: 0px;
-    border: 1px solid rgb(158, 172, 181);
-}
-
 .transact-section {
     display: flex;
     flex-direction: column;
     align-items: start;
-    border-left: solid 3px #408cd8;
-    border-bottom: solid 3px #408cd8;
-    margin-left: 20px;
     width: calc(100% - 40px);
-    margin-top: 20px;
     word-wrap: break-word;
     word-break: normal;
-}
-
-.transact-section-mint {
-    border-left: solid 3px #40d891;
-    border-bottom: solid 3px #40d891;
-    padding-bottom: 20px;
-    margin-top: 30px;
-    display:flex;
-    flex-direction: column;
-}
-
-.transact-section-payment {
-    border-left: solid 3px #ded285;
-    border-bottom: solid 3px #ded285;
-    margin-top: 30px;
-    display:flex;
-    flex-direction: column;
-}
-
-.transact-section-extra {
-    border-left: solid 3px #cc85de;
-    border-bottom: solid 3px #cc85de;
-    margin-top: 30px;
-    display:flex;
-    flex-direction: column;
+    background-color: var(--main-background-darker);
+    box-shadow: 3px 3px 5px 1px rgb(0, 0, 0, 0.25);
 }
 
 .address-text-input {
@@ -121,11 +89,21 @@
 }
 
 .transact-spends-container {
-    margin-left: 20px;
     display: flex;
-    flex-direction: row;
-    gap: 20px;
     flex-wrap: wrap;
+    margin-left: 20px;
+    width: calc(100% - 50px);
+    justify-content: start;
+    gap: 20px;
+    max-width: 650px;
+    height: 260px;
+    max-height: 260px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #0002;
+    border-radius: 8px;
+    box-sizing: border-box;
+    padding: 10px;
 }
 
 .transact-mint-policy-and-close {
@@ -174,9 +152,15 @@
 }
 
 .transact-spend-header {
-    font-size: 26px;
-    margin-left: 20px;
-    margin-top: -10px;
+    font-size: 18px;
+    width: 100%;
+    padding: 5px;
+    padding-left: 20px;
+    display: flex;
+    align-items: flex-start;
+    background-color: var(--main-background-color);
+    box-sizing: border-box;
+    border-bottom: 1px solid black;
 }
 
 .transact-spend-container {
@@ -184,13 +168,18 @@
     display: flex;
     flex-direction: column;
     align-items:start;
-    border: 1px solid rgb(158, 172, 181);
-    background-color: rgb(5, 39, 7);
+    border-radius: 6px;
+    background-color: var(--main-background-darkest);
+    min-width: 250px;
+    border: 1px solid rgb(43, 105, 80);
 }
 
 .transact-spend-message-container {
-    margin-left: 20px;
-    margin-bottom: 10px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 14px;
 }
 
@@ -206,56 +195,65 @@
     font-size: 1px;
 }
 
-.transact-spend-redeemer {
+.transact-spend-data {
     padding-left: 5px;
     padding-right: 5px;
     margin-top:5px;
-    width: 100%;
+    margin-left: 10px;
+    width: calc(100% - 20px);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: start;
 }
 
-.transact-spend-redeemer-filename {
-    margin-top: -5px;
+.spend-data-label {
+    font-size: 12px;
+    
+    margin-bottom: 2px;
+}
+
+.spend-remove-input-container {
+    width: calc(100% - 20px);
+    display: flex;
+    justify-content: end;
+    margin-top: 20px;
+    align-items: end;
+    flex-grow: 1;
+    margin-bottom: 20px;
+}
+.spend-data-wallet-address {
+    margin-left:  5px;
+    font-size: 12px;
+}
+.transact-spend-data-content {
     padding-left: 10px;
+    padding-right: 10px;
+    background-color: rgb(46, 82, 84);
+    width: 100%;
+    display: flex;
+    font-size: 13px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    box-sizing: border-box;
+    border-radius: 6px; 
+    justify-content: space-between;
 }
 
-.transact-spend-source {
-    padding-left: 5px;
-    padding-right: 5px;
-    margin-top:5px;
-    width: 100%;
-    box-sizing: border-box;
+.transact-spend-data-utxos {
     display: flex;
     flex-direction: column;
-    align-items: start;
 }
 
-.transact-spend-source-text {
-    margin-top: -5px;
-    padding-left: 10px;
-}
-
-.transact-spend-utxos {
-    padding-left: 5px;
-    padding-right: 5px;
-    margin-top:5px;
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-}
 .transact-spend-utxo-display {
     padding: 5px;
     margin-top: -5px;
 }
-.transact-spend-address-and-close {
-    display: flex;
-    background-color: #25244c;
-    align-items: center;
+
+.spending-list-header {
+    margin-left: 20px;
+    padding: 10px;
+    font-size: 18px;
 }
 
 .mint-add-container {
@@ -480,3 +478,11 @@
     margin-top: -5px;
     padding-left: 10px;
 }
+
+@supports ( -moz-appearance:none ){
+    .transact-spends-container {
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-color) #0000;
+        scrollbar-gutter: stable;
+    }
+  }

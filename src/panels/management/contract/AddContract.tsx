@@ -77,7 +77,7 @@ function AddContract() {
                 </div>
 
                 <div className='add-contract-selection-container'>
-                    <div className='input-label'>Validator Name </div>
+                    <div className='input-label'>Validator</div>
                     {
                         scriptType === 'aiken' ?
                             (

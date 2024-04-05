@@ -139,8 +139,10 @@ function Wallets() {
     return (
         <div className='management-content-scroll-exclusion-wrapper'>
             <div className='management-content management-section-shadow'>
-                <div className="management-section-heading">Wallets</div>
-                <div className='wallet-buttons'>
+                <div className="management-section-heading wallets-heading">
+                    Wallets
+
+                    <div className='wallet-buttons'>
                     {
                         providerKind === 'emulator' ?
                             null :
@@ -157,6 +159,8 @@ function Wallets() {
                             null
                     }
                 </div>
+                </div>
+
                 {
                     wallets.map(wallet => {
                         return <WalletComponent key={wallet.address} wallet={wallet} />

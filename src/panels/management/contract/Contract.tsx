@@ -1,13 +1,13 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import Copy from "../../../components/Copy"
 import { Contract, removeContract } from "../../../features/management/managementSlice"
 import { shortenAddress } from "../../../util/strings"
-import { useEffect, useState } from "react"
-import { useLucid } from "../../../components/LucidProvider"
-import { Data, Lucid, UTxO, toText } from "lucid-cardano"
-import { serializeAssets, sumAssets } from "../../../util/utxo"
+import { useState } from "react"
+import { Assets } from "lucid-cardano"
+import { sumAssets } from "../../../util/utxo"
 import JsonPopup from "../../../components/JsonPopup"
-import { deconstructObject } from "../../../util/data"
+import { Utxos } from "../Utxos"
+import { RootState } from "../../../app/store"
 
 type ContractViewParams = {
     contract: Contract
@@ -16,39 +16,8 @@ type ContractViewParams = {
 function ContractView({ contract }: ContractViewParams) {
     const dispatch = useDispatch()
     const [isExpanded, setIsExpanded] = useState(false)
-    const [utxos, setUtxos] = useState<UTxO[]>([])
-    const [isLoadingUtxos, setIsLoadingUtxos] = useState(false)
-    const [utxosError, setUtxosError] = useState('')
-    const { lucid, isLucidLoading } = useLucid()
-
-    useEffect(() => {
-        if (!isExpanded) {
-            return // we dont need to update utxos for closed panels
-        }
-
-        async function getContractUtxos() {
-            try {
-                setIsLoadingUtxos(true)
-                const fetchedUtxos = await lucid!!.provider.getUtxos(contract.address)
-                setUtxos(fetchedUtxos)
-            } catch (e: any) {
-                setUtxosError(e.message)
-            } finally {
-                setIsLoadingUtxos(false)
-            }
-
-        }
-
-        getContractUtxos()
-    }, [isExpanded, isLucidLoading])
-
-    if (isLucidLoading) {
-        return <></>
-    }
-
-    const loadingSpinner = <div className="contracts-loader">Fetching...<div className="lds-ring"><div></div><div></div><div></div><div></div></div></div>
-
-    const balances = sumAssets(utxos.map(utxo => utxo.assets))
+    const [balances, setBalances] = useState<Assets>({})
+    const network = useSelector((state: RootState) => state.settings.network)
 
     return (
         <div
@@ -57,19 +26,15 @@ function ContractView({ contract }: ContractViewParams) {
         >
             <div className='contract-header'>
                 <div className='flex-row'>
-                <div className='contract-name'>
-                    {contract.name} <span className='contract-version'>v{contract.version}</span>
-                </div>
-                
+                    <div className='contract-name'>
+                        {contract.name} <span className='contract-version'>v{contract.version}</span>
+                    </div>
+
                 </div>
                 <div
                     className='expand'
                     onClick={() => {
                         setIsExpanded(!isExpanded)
-                        // if we wait until the effect runs in reaction to the expansion
-                        // there will be one render with stale data of utxos
-                        // so we set the loading state "prematurely" here
-                        setIsLoadingUtxos(true)
                     }}
                 >
                     <div className='expand-words'>
@@ -78,7 +43,7 @@ function ContractView({ contract }: ContractViewParams) {
                     <div className='expand-icon'>
                         {`${isExpanded ? '▼' : '◀'}`}
                     </div>
-                </div> {/* here is the arrow ↔ */}
+                </div>
             </div>
 
             {
@@ -98,7 +63,7 @@ function ContractView({ contract }: ContractViewParams) {
                                 <div className='contract-params'>
                                     <div className='contract-params-label'>Address</div>
                                     <div className='contract-params-content'>
-                                    <span>{shortenAddress(contract.address)}<Copy value={contract.address} /></span>
+                                        <span>{shortenAddress(contract.address)}<Copy value={contract.address} /></span>
                                     </div>
                                 </div>
                             </div>
@@ -106,11 +71,11 @@ function ContractView({ contract }: ContractViewParams) {
                                 <div className='contract-params'>
                                     <div className='contract-params-label'>Balance</div>
                                     <div className='contract-params-content'>
-                                    <span>₳ {balances['lovelace'] ? (Number(balances['lovelace']) / 1000000).toFixed(6) : 0}</span>
+                                        <span>{network === 'Mainnet' ? null : 't'}₳ {balances['lovelace'] ? (Number(balances['lovelace']) / 1000000).toFixed(6) : 0}</span>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div className='contract-params params-label-container'>
                                 <div className={`show-params-text ${contract.paramsFileName !== 'None' ? 'underline' : ''}`}>
                                     {
@@ -137,59 +102,14 @@ function ContractView({ contract }: ContractViewParams) {
                         <div className='contract-utxos-wrapper'>
                             <div className='utxos-heading'>Unspent Outputs</div>
                             {
-                                <div className='contract-utxos'>
-                                    {
-                                        isExpanded && isLoadingUtxos ? loadingSpinner : utxos.length > 0 ? utxos.map(utxo => {
-                                            const parsedDatum = utxo.datum ? deconstructObject(Data.from(utxo.datum)) : null
-
-                                            return (
-                                                <>  
-                                                    <div className='header-shrinker'>
-                                                    <div
-                                                        className='utxo-header'
-                                                    >
-                                                        {`${shortenAddress(utxo.txHash)}@${utxo.outputIndex}`}<Copy value={utxo.txHash} />
-                                                    </div>
-                                                    </div>
-                                                    <div
-                                                        className='utxo'
-                                                        key={`${utxo.txHash}${utxo.outputIndex}`}
-                                                    >
-
-                                                        <div className='datum-and-script-ref'>
-                                                            <div
-                                                                className='datum'
-                                                            >
-                                                                {utxo.datum ? <JsonPopup jsonString={JSON.stringify(parsedDatum, null, 2)}><span className='datum-indicator'>Show Datum</span></JsonPopup> : <span className='no-datum-indicator'>No Datum</span>}
-                                                            </div>
-
-                                                            <div
-                                                                className='script-ref'
-                                                            >
-                                                                {utxo.scriptRef ? <JsonPopup jsonString={utxo.scriptRef.script}><span className='datum-indicator'>Show Ref</span></JsonPopup> : <span className='no-datum-indicator'>No Reference Script</span>}
-                                                            </div>
-                                                        </div>
-                                                        <div className='assets-header'>
-                                                            Assets
-                                                        </div>
-                                                        <div className='assets-container'>
-                                                            {
-                                                                Object.entries(utxo.assets).map(([assetName, quantity]) => {
-                                                                    return (
-                                                                        <div className='asset'>
-                                                                            <div>{assetName === 'lovelace' ? assetName : `[${shortenAddress(assetName.substring(0, 55), 4, 4)}] ${toText(assetName.substring(56))}`}</div>
-                                                                            <div>{quantity.toString()}</div>
-                                                                        </div>
-                                                                    )
-                                                                })
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                </>
-                                            )
-                                        }) : <div className='no-unspent-outputs'>No unspent outputs found at the contract address.</div>
-                                    }
-                                </div>
+                                <Utxos 
+                                    address={contract.address} 
+                                    onUtxoUpdate={(utxos) => {
+                                        const balances = sumAssets(utxos.map(utxo => utxo.assets))
+                                        setBalances(balances)
+                                    }}
+                                    source='contract'
+                                />
                             }
                         </div>
                     </div>
