@@ -29,14 +29,12 @@ interface SettingsFormState {
 }
 
 interface SettingsState {
-    open: boolean
     network: Network
     providerConfig: ProviderConfig,
     form: SettingsFormState
 }
 
 const initialState: SettingsState = {
-    open: false,
     network: 'Custom',
     providerConfig: {
         kind: 'emulator'
@@ -61,11 +59,7 @@ const settingsSlice = createSlice({
     name: 'tooltip',
     initialState,
     reducers: {
-        toggleSettings: (state) => {
-            state.open = !state.open
-        },
         saveUpdatedSettings: (state) => {
-            state.open = false
             state.network = state.form.network === 'Emulator' ? 'Custom' : state.form.network
 
             if (state.form.providerKind === 'blockfrost') {
@@ -102,7 +96,6 @@ const settingsSlice = createSlice({
 })
 
 export const {
-    toggleSettings,
     saveUpdatedSettings,
     setFormProviderKind,
     setBlockfrostConfig,

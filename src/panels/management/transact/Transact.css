@@ -293,24 +293,6 @@
     font-size: 12.5px;
 }
 
-.text-input {
-    border: 1px solid white;
-    font-size: 14px;
-    background-color: #00000000;
-    height: 17px;
-    width: 100px;
-}
-
-.text-input:hover {
-    border: 1px solid white;
-}
-
-.text-input:focus {
-    border: 1px solid white;
-    outline: none;
-}
-
-
 .add-mint-button-container {
     display: flex;
     flex-direction: column;

@@ -5,6 +5,7 @@ import { RootState } from '../../app/store'
 import { Contracts } from './contract/Contracts'
 import { Wallets } from './wallet/Wallets'
 import { Transact } from './transact/Transact'
+import { Settings } from '../settings/Settings'
 
 function ManagementPanel() {
     const management = useSelector((state: RootState) => state.management)
@@ -18,6 +19,8 @@ function ManagementPanel() {
             return <Wallets />
         } else if (management.selectedTabIndex === 3) {
             return <Transact />
+        } else if (management.selectedTabIndex === 4) {
+            return <Settings />
         }
     })()
 

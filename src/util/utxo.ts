@@ -51,9 +51,27 @@ function deserializeUtxos(sUtxos: SerializableUTxO[]) {
     return sUtxos.map(fromSerializableUTxO)
 }
 
+function sumAssets(assetsArray: Assets[]): Assets {
+    const totalAssets: Assets = {};
+
+    for (const assets of assetsArray) {
+        for (const [unit, amount] of Object.entries(assets)) {
+            if (totalAssets[unit]) {
+                totalAssets[unit] += BigInt(amount);
+            } else {
+                totalAssets[unit] = BigInt(amount);
+            }
+        }
+    }
+
+    return totalAssets;
+}
+
+
 export {
     serializeUtxos,
     deserializeUtxos,
     serializeAssets,
-    deserializeAssets
+    deserializeAssets,
+    sumAssets
 }

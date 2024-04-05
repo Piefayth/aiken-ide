@@ -22,3 +22,20 @@ export function constructObject(json: any): any {
         throw new Error("Unknown type in JSON structure");
     }
 }
+
+export function deconstructObject(obj: any): any {
+    if (obj instanceof Constr) {
+        return {
+            constructor: obj.index,
+            fields: obj.fields.map(field => deconstructObject(field))
+        }
+    } else if (Array.isArray(obj)) {
+        return obj.map(item => deconstructObject(item))
+    } else if (typeof obj === 'object' && obj !== null && 'int' in obj) {
+        return { int: obj.int }
+    } else if (typeof obj === 'object' && obj !== null && 'bytes' in obj) {
+        return { bytes: obj.bytes }
+    } else {
+        return obj
+    }
+}

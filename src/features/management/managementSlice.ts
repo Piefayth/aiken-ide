@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Lucid, Network, Script, WalletApi } from 'lucid-cardano'
-export const TAB_NAMES = ['Build', 'Contracts', 'Wallets', 'Transact']
+export const TAB_NAMES = ['Build', 'Contracts', 'Wallets', 'Transact', 'Settings']
 
 export interface Wallet {
     address: string,

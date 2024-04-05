@@ -11,6 +11,9 @@
   --button-danger-hover: rgb(184, 58, 58);
   --button-danger-active: rgb(185, 41, 41);
   --scrollbar-color: rgba(205, 210, 234, 0.509);
+  --alternate-color-odd: rgb(67, 62, 111);
+  --alternate-color-even: rgb(105, 53, 88);
+  --popup-background: #131a2e;
 }
 
 #root {
@@ -30,6 +33,12 @@ body {
   /* background-image: linear-gradient(225deg, #5a173c 0%, #331e43 45%, #154160 100%); */
 }
 
+.data-popup {
+  background-color: var(--popup-background);
+  border: 1px solid black;
+  text-align: left;
+  box-shadow: 4px 4px 5px 1px rgba(0, 0, 0, 0.25);
+}
 .flex-row {
   display: flex;
   justify-content: start;
@@ -168,6 +177,7 @@ button.disabled:hover {
 
 .copy-widget {
   margin-left: 10px;
+  padding: 2px;
 }
 
 .select {
@@ -180,24 +190,14 @@ button.disabled:hover {
   padding: 5px;
 }
 
-input {
-  border-radius: 0px;
-  border: solid 1px #ffffff77;
-}
-input:hover {
-  border: 1px solid rgb(158, 172, 181);
-  outline: none;
-}
-input:focus {
-  border: 1px solid rgb(158, 172, 181);
-  outline: none;
-}
-
 .text-input {
-  border: 1px solid white;
   font-size: 15px;
-  background-color: #00000000;
+  background-color: var(--main-background-darkest);
   height: 17px;
+  border: none;
+  outline: none;
+  border-bottom: solid 1px #ffffff55;
+  padding: 2px;
 }
 
 
@@ -243,6 +243,15 @@ input:focus {
       scrollbar-gutter: stable;
   }
 }
+
+@supports ( -moz-appearance:none ){
+  .data-popup{
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-color) #0000;
+      scrollbar-gutter: stable;
+  }
+}
+
 
 ::-webkit-scrollbar-track {
   background-color: #00000000 !important;

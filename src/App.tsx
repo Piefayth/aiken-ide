@@ -29,7 +29,6 @@ function App() {
   return (() => {
       return (
         <MonacoContext.Provider value={monaco}>
-          <Settings />
           <Tooltip />
           <ContextMenu />
           <div className={`main-layout-container ${loadingVisibilityClass}`}>

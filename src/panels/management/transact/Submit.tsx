@@ -209,7 +209,7 @@ async function buildTransaction(lucid: Lucid, transactState: TransactState, file
         if (redeemer) {
             tx.mintAssets(deserializeAssets(mint.assets), Data.to(redeemer))
         } else {
-            tx.mintAssets(deserializeAssets(mint.assets))
+            tx.mintAssets(deserializeAssets(mint.assets), Data.void())
         }
     }
 
@@ -235,8 +235,8 @@ async function buildTransaction(lucid: Lucid, transactState: TransactState, file
             }
         }
 
-        if (datum) {
-            tx.payToAddressWithData(payment.toAddress, Data.to(datum), deserializeAssets(payment.assets))
+        if (datum) {    // inline datums only for now
+            tx.payToAddressWithData(payment.toAddress, { inline: Data.to(datum) }, deserializeAssets(payment.assets))
         } else {
             tx.payToAddress(payment.toAddress, deserializeAssets(payment.assets))
         }

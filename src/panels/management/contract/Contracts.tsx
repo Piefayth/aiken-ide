@@ -6,6 +6,7 @@ import { removeContract } from "../../../features/management/managementSlice"
 import { shortenAddress } from "../../../util/strings"
 import Copy from "../../../components/Copy"
 import './Contract.css'
+import { ContractView } from "./Contract"
 
 function Contracts() {
     const { isLucidLoading, lucid: lucidOrUndefined } = useLucid()
@@ -26,10 +27,16 @@ function Contracts() {
             <div className='management-content management-section-shadow'>
                 <div className='management-section-heading'>Contracts</div>
                 <AddContract />
-                <div className='flex-column'>
+                <div className='contracts-wrapper'>
                     <div className='contracts-subheading'>
                         Your Contracts
                     </div>
+                    {/* 
+                        what if
+                        we make each contract (and wallet) very long horizontally
+                        collapse most of the information
+                        let the user expand them, which THEN loads the utxos
+                    */}
                     <div className='contracts-container'>
 
                         {
@@ -40,57 +47,7 @@ function Contracts() {
                         {
                             contracts.map(contract => {
                                 return (
-                                    <div
-                                        key={`${contract.name}${contract.version}`}
-                                        className='contract-container'
-                                    >
-                                        <div className='contract-header'>
-                                            <div className='contract-name'>{contract.name}</div>
-                                            <div className='contract-version'>Version {contract.version}</div>
-                                        </div>
-                                        <div className='contract-data'>
-
-                                            <div className='contract-data-holder'>
-                                                <div className='contract-params'>
-                                                    <div className='contract-params-label'>Address</div>
-                                                    <div className='contract-params-content'>
-                                                        {shortenAddress(contract.address)} <Copy value={contract.address} />
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className='contract-data-holder'>
-                                                <div className='contract-params'>
-                                                    <div className='contract-params-label'>Script Hash</div>
-                                                    <div className='contract-params-content'>
-                                                        {shortenAddress(contract.scriptHash)} <Copy value={contract.scriptHash} />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className='contract-data-holder'>
-
-                                            </div>
-
-
-
-                                            <div className='delete-contract-button-container'>
-                                                <div className='contract-params params-label-container'>
-                                                    <div className='contract-params-label'>Parameters</div>
-                                                    <div className='contract-params-content'>{contract.paramsFileName}</div>
-                                                </div>
-                                                <button
-                                                    className='button danger-button'
-                                                    onClick={() => dispatch(removeContract({
-                                                        version: contract.version,
-                                                        name: contract.name
-                                                    }))}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                    </div>
+                                    <ContractView key={contract.address} contract={contract}/>
                                 )
                             })
                         }
@@ -102,15 +59,3 @@ function Contracts() {
 }
 
 export { Contracts }
-
-function formatUTCDate(date: Date): string {
-    const day = date.getUTCDate().toString().padStart(2, '0');
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const month = monthNames[date.getUTCMonth()];
-    const year = date.getUTCFullYear();
-    const hours = date.getUTCHours().toString().padStart(2, '0');
-    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
-
-    return `${day} ${month} ${year} ${hours}:${minutes}`;
-}
